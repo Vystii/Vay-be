@@ -4,11 +4,11 @@ from django.db import models
 
 class ModelBase(models.Model):
     STUDIES_LEVELS = [
-        ('L1', 'Active'),
-        ('L2', 'Inactive'),
-        ('L3', 'Pending'),
-        ('M1', 'Pending'),
-        ('M2', 'Pending')
+        ('L1', 'Licence 1'),
+        ('L2', 'Licence 2'),
+        ('L3', 'Licence 3'),
+        ('M1', 'Master 1'),
+        ('M2', 'Master 2')
     ]
 
     studies_level = models.CharField(

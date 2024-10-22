@@ -1,5 +1,6 @@
 from typing import Iterable
 from django.contrib.auth.models import AbstractUser
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -10,8 +11,15 @@ from v_utilities.models import ModelBase
   
 class Users(ModelBase, AbstractUser):
     class Meta:
+        permissions = [
+            # Ths permission should be given be any way possible to the instructors
+            ("handle_request", _("Can handle request"))
+            ]
         abstract = False
-        
+    
+    def __str__(self):
+        return f"{self.username}-{self.email}"
+    
     username_validator = ModelValidator(regex = r"^[1-9]{2}[A-Z]\d{3,4}$")
     username = models.CharField(
         _("matricule"),
@@ -25,8 +33,6 @@ class Users(ModelBase, AbstractUser):
             "unique": _("A user with that matricule already exists."),
         },
     )
-    
-    
     
     joinded_school= models.IntegerField(
         choices=[(r, r) for r in range(1980, timezone.now().year + 1)],
@@ -63,12 +69,37 @@ class Users(ModelBase, AbstractUser):
             # If no previous matricule, start with 'A0001'
             return "A0001"
 
-
+    @property
+    def is_request_handler(self):
+        return self.has_perm("handle_request")
+    
     @property
     def year(self):
         return str(self.joinded_school)
 
-
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email", "date_joined", "studies_level"]
+    
+class SchoolRequest(models.Model):
+    receiver = models.ForeignKey(
+        Users,
+        verbose_name=_("receiver"),
+        on_delete=models.CASCADE,
+        related_name="+",
+        limit_choices_to={"user_permissions": 33},
+        blank=False
+    )
+    sender = models.ForeignKey(
+        Users,
+        verbose_name=_("sender"),
+        on_delete=models.CASCADE,
+        related_name="+",
+        blank= False
+    )
+    processed = models.BooleanField(_("processed"), default= False)
+    
+    body = models.TextField(_("Body"), blank=False)
+    
+    REQUIRED_FIELDS = ["receiver", "sender", "body"]
+    
