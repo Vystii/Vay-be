@@ -1,17 +1,18 @@
 from typing import Iterable
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
-from .validators import MatriculeValidator
+from v_utilities.validators import ModelValidator
+from v_utilities.models import ModelBase
 
   
-class Users(AbstractUser):
-    
-    matricule = models.CharField(max_length=40, unique=True)
-    username_validator = MatriculeValidator()
+class Users(ModelBase, AbstractUser):
+    class Meta:
+        abstract = False
+        
+    username_validator = ModelValidator(regex = r"^[1-9]{2}[A-Z]\d{3,4}$")
     username = models.CharField(
         _("matricule"),
         max_length=7,
@@ -25,19 +26,7 @@ class Users(AbstractUser):
         },
     )
     
-    STUDIES_LEVELS = [
-        ('L1', 'Active'),
-        ('L2', 'Inactive'),
-        ('L3', 'Pending'),
-        ('M1', 'Pending'),
-        ('M2', 'Pending')
-    ]
-
-    studies_level = models.CharField(
-        max_length=2,
-        choices=STUDIES_LEVELS,
-        default='L1',
-    )
+    
     
     joinded_school= models.IntegerField(
         choices=[(r, r) for r in range(1980, timezone.now().year + 1)],
@@ -45,20 +34,21 @@ class Users(AbstractUser):
     )
     
     def save(self, force_insert: bool = ..., force_update: bool = ..., using: str | None = ..., update_fields: Iterable[str] | None = ...) -> None:
-        if not self.matricule:
+        if not self.username:
             # Get the last two digits of the year
-            year_suffix = str(self.date_field.year)[-2:]
+            year_suffix = str(self.year)[-2:]
             # Generate the next unique letter and 4-digit combination
             next_unique = self.get_next_unique()
-            # Combine to form the matricule
-            self.matricule = f"{year_suffix}{next_unique}"
-        return super().save(force_insert, force_update, using, update_fields)
+            # Combine to form the username
+            self.username = f"{year_suffix}{next_unique}"
+        print(f"force_insert: {force_insert}\nforce_update: {force_update}\nusing: {using}\nupdate_fieds: {update_fields}")
+        return super().save()
     
     def get_next_unique(self):
-        # Get the latest matricule
+        # Get the latest username
         latest = Users.objects.order_by('-id').first()
-        if latest and latest.matricule:
-            latest_code = latest.matricule[2:]  # Skip the year part
+        if latest and latest.username:
+            latest_code = latest.username[2:]  # Skip the year part
             # Convert the letter and digits to a number
             letter = latest_code[0]
             digits = latest_code[1:]
@@ -76,7 +66,7 @@ class Users(AbstractUser):
 
     @property
     def year(self):
-        return self.joinded_school.year
+        return str(self.joinded_school)
 
 
     EMAIL_FIELD = "email"
