@@ -9,28 +9,59 @@ class Course (ModelBase):
     # TODO: faire en sorte que le validateur intervenne également lorsqu'on essaye de créer un utilisateur
     # directement dans le code 
 
-    codeUeValidator = validators.RegexValidator(regex=r"^[A-Z]{3}\d{3,4}$", message=_("The UE code must start with 3 letters followed by 3 or 4 numbers"))
+    codeUeValidator = validators.RegexValidator(regex=r"^[A-Z]{3,4}\d{3,4}$", message=_("The UE code must start with 3 letters followed by 3 or 4 numbers"))
     code_ue = models.CharField(
         _("code ue"),
-        max_length=7,
+        max_length=8,
         unique=True,
         primary_key=True,
         validators= [codeUeValidator],
         null=False
     )
     
-    annee = models.IntegerField(
+    year = models.IntegerField(
         _("year"),
         choices=[(r, r) for r in range(1980, timezone.now().year + 1)],
         default=timezone.now().year,
         null=False
     )
     
-    intitule = models.CharField(_("course label"),max_length=7, default=None, blank=False)
+    label = models.CharField(_("course label"),max_length=50, default=None, blank=False)
     status = models.BooleanField(_("status"), default=True, null=False)
+    
+    
+    
+    teachers =models.ManyToManyField(
+        Users,
+        verbose_name=_("teacher"),
+        # on_delete=models.SET_NULL,
+        # blank= False,
+        limit_choices_to=models.Q(
+            user_permissions__name = "teach") | 
+            models.Q(is_superuser = True
+        ),
+        default=1,
+    )
     
     REQUIRED_FIELDS = ["code_ue", "intitule"]
     
+    
+    def toDict(self):
+        return {
+            "year": self.year,
+            "status": self.status,
+            "label": self.label,
+            "code_ue": self.code_ue,
+            "study_field_id": self.study_field.code,
+            "study_level_id": self.study_level.code
+        }
+    @staticmethod
+    def getCourses(**args):
+        query_filter = {"status": True} | args
+        params = {key: value for key, value in query_filter.items() if value is not None}
+        courses = Course.objects.filter(**params)
+        return [course.toDict() for course in courses]
+
 class Note(models.Model):
     def __str__(self):
         return f"{self.note}-{self.student.username}"

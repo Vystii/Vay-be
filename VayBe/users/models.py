@@ -13,11 +13,13 @@ class Users(ModelBase, AbstractUser):
     class Meta:
         permissions = [
             # Ths permission should be given be any way possible to the instructors
-            ("handle_request", _("Can handle request"))
-            ]
+            ("handle_request", _("Can handle request")),
+            ("teach", _("can teach a lesson"))
+        ]
         abstract = False
     
     def __str__(self):
+        self.is_superuser
         return f"{self.username}-{self.email}"
     
     username_validator = ModelValidator(regex = r"^[1-9]{2}[A-Z]\d{3,4}$")
@@ -34,6 +36,12 @@ class Users(ModelBase, AbstractUser):
         },
     )
     
+    is_staff = models.BooleanField(
+        _("is teacher"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+    
     joinded_school= models.IntegerField(
         choices=[(r, r) for r in range(1980, timezone.now().year + 1)],
         default=timezone.now().year
@@ -47,7 +55,6 @@ class Users(ModelBase, AbstractUser):
             next_unique = self.get_next_unique()
             # Combine to form the username
             self.username = f"{year_suffix}{next_unique}"
-        print(f"force_insert: {force_insert}\nforce_update: {force_update}\nusing: {using}\nupdate_fieds: {update_fields}")
         return super().save()
     
     def get_next_unique(self):
@@ -87,7 +94,7 @@ class SchoolRequest(models.Model):
         verbose_name=_("receiver"),
         on_delete=models.CASCADE,
         related_name="+",
-        limit_choices_to={"user_permissions": 33},
+        limit_choices_to=models.Q(user_permissions__codename="handle_request") | models.Q(is_superuser= True),
         blank=False
     )
     sender = models.ForeignKey(
