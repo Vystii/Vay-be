@@ -1,6 +1,7 @@
 import re
 
 from django.test import TestCase
+from django.utils import timezone
 
 from users.models import Users
 from v_utilities.models import StudyField, StudyLevel
@@ -26,9 +27,10 @@ class CourseModelTest(TestCase):
         Course  (study_field_id= "GEO", study_level_id="L1" , code_ue="MAT103", label = "mathématique").save()
         Course  (study_field_id= "GEO", study_level_id="L1" , code_ue="MAT104", label = "mathématique").save()
         Course  (study_field_id= "INF", study_level_id="L1" , code_ue="MAT105", label = "mathématique").save()
+        Course  (study_field_id= "INF", study_level_id="L1" , code_ue="MAT105", label = "mathématique", year=2023).save()
         
-        courses = Course.objects.filter(study_field_id = "INF", study_level_id="L1")
-        courses = [course.code_ue    for course in courses]
+        courses = Course.objects.filter(study_field_id = "INF", study_level_id="L1", year = timezone.now().year)
+        courses = [course.code_ue  for course in courses]
         print(courses)
         
-        self.assertIs(courses == ["MAT101","MAT105"], True)
+        self.assertIs(courses == ["MAT101"], True)
