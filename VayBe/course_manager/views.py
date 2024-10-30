@@ -1,31 +1,36 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views import View
+from django.utils import timezone
+
+from users.models import Users
+
 from .models import Course
 from course_manager.models import Course as ModelCourse
 
-class Course(View):
-    model = Course
-    query_filter ={"status": True}
+class UserCourses(View):
     
-    def alterQuery(self, **args):
-        for key in args:
-            self.query_filter |= args
-        pass
-    
-    def removeFilter(self, fieldNames:list[str]):
-        for field in fieldNames:
-            self.query_filter.pop(field, None)
+    @staticmethod
+    def getCourses(user_matricule:str, year:int = timezone.now().year):
+        user = get_object_or_404(Users, username =user_matricule)
+        std_field = user.study_field.code
+        std_level = user.study_level.code
+        print(f"user_id: {user}")
+        if(user.has_perm("teach")):
+            return ModelCourse.getCourses(study_field_id=std_field, study_level_id = std_level, year = year, teachers=user)
+        return ModelCourse.getCourses(study_field_id=std_field, study_level_id = std_level, year = year)
         
-    def getCourse(self):
-        args = {key: value for key, value in self.query_filter.items() if value is not None}
-        course = ModelCourse.objects.filter(**args)
-        return course
-            
-    def get(self, request:HttpRequest):
-        user = request.user
-        
-        return  HttpResponse("Courses")
+    def get(self, request:HttpRequest, user_matricule:str, year:int=timezone.now().year):
+        courses = list()
+        if user_matricule is not None:
+            courses = UserCourses.getCourses(user_matricule, year=year)
+        return  JsonResponse(courses,safe=False)
 
+
+class ClassCourses(View):
+    def get(self, request:HttpRequest, study_field:str, study_level:str, year:int=timezone.now().year):
+        courses = ModelCourse.getCourses(study_field_id = study_field, study_level_id = study_level, year = year )
+        return JsonResponse(courses, safe=False)
 class Note(View):
     def get(self, request):
         return HttpResponse("notes")    
