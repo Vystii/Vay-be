@@ -4,7 +4,8 @@ from django.db import models
 from v_utilities.validators import ModelValidator
 from v_utilities.models import ModelBase
 from django.core import validators
-from users.models import Users
+from users.models import Users, PropertyModels
+
 class Course (ModelBase):
     # TODO: faire en sorte que le validateur intervenne également lorsqu'on essaye de créer un utilisateur
     # directement dans le code 
@@ -62,9 +63,10 @@ class Course (ModelBase):
         courses = Course.objects.filter(**params)
         return [course.toDict() for course in courses]
 
-class Note(models.Model):
+class Note(PropertyModels):
     def __str__(self):
         return f"{self.note}-{self.student.username}"
+    
     
     student = models.ForeignKey(Users, verbose_name= _("student"), on_delete=models.CASCADE, related_name="+")
     course = models.ForeignKey(Course, verbose_name= _("course"), on_delete=models.CASCADE)
