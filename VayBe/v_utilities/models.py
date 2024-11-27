@@ -1,9 +1,10 @@
+from abc import abstractmethod
 from email.utils import unquote
+from pyclbr import Class
 from wsgiref.validate import validator
 from django.db import models
 from django.core import validators
 from django.utils.translation import gettext_lazy as _
-
 # Create your models here.
 
 class StudyLevel(models.Model):
@@ -32,4 +33,6 @@ class ModelBase(models.Model):
     study_field = models.ForeignKey(StudyField, verbose_name=_("study field"), on_delete=models.CASCADE, blank = False)
     class Meta:
         abstract = True
+        
+        
         

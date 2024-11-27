@@ -88,25 +88,43 @@ class Users(ModelBase, AbstractUser):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email", "date_joined", "studies_level"]
     
-class SchoolRequest(models.Model):
+    
+
+class PropertyModels(models.Model):
+    
+    owner = models.ForeignKey(Users, verbose_name=_("owner"), on_delete=models.CASCADE, blank = True, related_name="owned_%(class)s")
+    
+    class Meta:
+        abstract = True
+
+
+class SchoolRequest( PropertyModels):
+    """_summary_
+
+    Args:
+        models (_type_): structure that represente request
+    """
     receiver = models.ForeignKey(
         Users,
         verbose_name=_("receiver"),
         on_delete=models.CASCADE,
-        related_name="+",
-        limit_choices_to=models.Q(user_permissions__codename="handle_request") | models.Q(is_superuser= True),
+        # related_name="+",
+        limit_choices_to=models.Q(user_permissions__codename="handle_request") | models.Q(is_superuser= True) | models.Q(is_staff=True),
         blank=False
     )
-    sender = models.ForeignKey(
-        Users,
-        verbose_name=_("sender"),
-        on_delete=models.CASCADE,
-        related_name="+",
-        blank= False
-    )
+    # sender = models.ForeignKey(
+    #     Users,
+    #     verbose_name=_("sender"),
+    #     on_delete=models.CASCADE,
+    #     related_name="+",
+    #     blank= False
+    # )
     processed = models.BooleanField(_("processed"), default= False)
     
     body = models.TextField(_("Body"), blank=False)
+    
+    class Meta:
+        abstract = False
     
     REQUIRED_FIELDS = ["receiver", "sender", "body"]
     
