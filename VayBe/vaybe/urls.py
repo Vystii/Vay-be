@@ -19,7 +19,7 @@ from django.urls import path, include
 # from course_manager import views as course_urls
 
 urlpatterns = [
-    path('user/', include('users.urls')),
+    path('users/', include('users.urls')),
     path('course_manager/', include('course_manager.urls')),
     path('admin/', admin.site.urls),
 ]
