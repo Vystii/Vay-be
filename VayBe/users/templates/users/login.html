@@ -11,20 +11,24 @@
   <link rel="stylesheet" href="{% static 'users/css/login.css' %}" />
 {% endblock %}
 
+{% block bottom %}
+  <script src="{% static 'users/js/login-page.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
+  <h2 class="text-center text-black fw-bold">Login</h2>
+  <form method="post" class="d-flex flex-column align-items-center">
     {% csrf_token %}
     {% for field in form %}
-      <div class="form-group">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      <div class="form-group mb-3">
         {% render_field field %}
+        <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
         {% if field.errors %}
           <div class="alert alert-danger">{{ field.errors }}</div>
         {% endif %}
       </div>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary fw-bold text-white space-inner-px border-radius-20">Login</button>
   </form>
   {% if messages %}
     <div class="alert alert-danger">

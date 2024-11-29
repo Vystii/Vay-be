@@ -17,10 +17,15 @@
     {% endblock %}
   </head>
   <body>
-    <div class="vaybe-template">
-      {% block content %}
-        <!-- Content from child templates will be inserted here -->
-      {% endblock %}
+    <div class="vaybe-body-template bg-body-tertiary">
+      <div class="vaybe-content">
+        {% block content %}
+          <!-- Content from child templates will be inserted here -->
+        {% endblock %}
+      </div>
     </div>
+    {% block bottom %}
+
+    {% endblock %}
   </body>
 </html>
