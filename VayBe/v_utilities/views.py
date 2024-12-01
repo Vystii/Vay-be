@@ -5,13 +5,19 @@ from django.http import HttpRequest
 from django.http.response import HttpResponse
 from typing import Any
 from django.views import View
+from django.views.generic import TemplateView
 
-
-# Create your views here.
-class LoginBaseViews(View):
+class BaseViews:
     class meta:
         abstract = True
-    
+        
     @method_decorator(login_required)
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         return super().dispatch(request, *args, **kwargs)
+
+# Create your views here.
+class LoginBaseViews(View, BaseViews):
+    pass
+    
+class TemplateBaseViews(TemplateView, BaseViews):
+    pass

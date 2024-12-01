@@ -1,0 +1,69 @@
+<!-- templates/users/login.html -->
+{% extends 'base.html' %} {% load static %}
+{% block title %}
+  Dashboard
+{% endblock %}
+
+{% block header %}
+  <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+{% endblock %}
+
+{% block bottom %}
+
+{% endblock %}
+
+{% block content_class %}
+  container
+{% endblock %}
+
+{% block pageTitle %}
+  <div class="">
+    <h1>{{ title }}</h1>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="space-padding vaybe-dashboard">
+    <div class="row">
+      <div class="dashboard-user-info space-inner-px col-md-6 col-xl-4">
+        <h2 class="dashboad-studentinfo-section-title text-black text-uppercase double-dots-title circle left primary mb-5">Your infos</h2>
+        <table class="table table-borderless">
+          <tbody>
+            {% if user.name %}
+              <tr class="user--name">
+                <th scope="row" class="label">Name</th>
+                <td class="value">{{ user.name }}</td>
+              </tr>
+            {% endif %}
+            {% if user.surname %}
+              <tr class="user--surname">
+                <th scope="row" class="label">Prenom</th>
+                <td class="value">{{ user.surname }}</td>
+              </tr>
+            {% endif %}
+            <tr class="user--matricule">
+              <th scope="row" class="label">Matricule</th>
+              <td class="value">{{ user.matricule }}</td>
+            </tr>
+            <tr class="user--study-level">
+              <th scope="row" class="label">Niveau Etude</th>
+              <td class="value">{{ user.std_level }}</td>
+            </tr>
+            <tr class="user--std-field">
+              <th scope="row" class="label">Filière</th>
+              <td class="value">{{ user.std_field }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="space-inner-px space-inner-py dashboard-menu col-md-6 col-xl-8 bg-white border-radius-20">
+        <div class="row">
+          {% for d_block in blocks %}
+            {% include './snippets/dashboard-block.html' with block=d_block container_class='col-4' only %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Add more dashboard content here -->
+{% endblock %}

@@ -18,7 +18,11 @@
   </head>
   <body>
     <div class="vaybe-body-template bg-body-tertiary">
-      <div class="vaybe-content">
+      <div class="vaybe-content {% block content_class %}
+        {% endblock %}">
+        {% block pageTitle %}
+
+        {% endblock %}
         {% block content %}
           <!-- Content from child templates will be inserted here -->
         {% endblock %}
