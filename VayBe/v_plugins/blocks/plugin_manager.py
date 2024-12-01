@@ -39,7 +39,7 @@ class PluginBaseManager:
     def getPluginBase()->str:
         pass
     
-    def getAllInstance(cls):
+    def getAllInstances(cls)->dict:
         """return all the class that extends a specific class
 
         Returns:
@@ -47,3 +47,11 @@ class PluginBaseManager:
         """
         blocks = cls.check_and_get_classes(cls, settings.INSTALLED_APPS)
         return blocks
+    
+    @staticmethod
+    def getBlocks(cls)->list:
+        blocksByApps = PluginBaseManager.getAllInstances(cls)
+        result = []
+        for blocksList in blocksByApps.values():
+            result.extend(blocksList)
+        return result
