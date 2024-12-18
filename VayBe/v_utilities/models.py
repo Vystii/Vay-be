@@ -27,12 +27,24 @@ class StudyField(models.Model):
     label = models.CharField(_("label"), max_length=20)
     def __str__(self):
         return f"{self.code}-{self.label}"
+    
+    def toDict(self):
+        return {
+            "code": self.code,
+            "label": self.label
+        }
 
 class ModelBase(models.Model):
     study_level = models.ForeignKey(StudyLevel, verbose_name=_("studies level"), on_delete=models.CASCADE, blank=False)
     study_field = models.ForeignKey(StudyField, verbose_name=_("study field"), on_delete=models.CASCADE, blank = False)
     class Meta:
         abstract = True
+        
+    def toDict(self):
+        return {
+            "study_level": self.study_level,
+            "study_field": self.study_field
+        }
         
         
         

@@ -16,10 +16,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# from course_manager import views as course_urls
+from django.conf import settings
+from django.conf.urls.static import static
+from v_utilities.views import TemplateBaseViews
+from users.views import RequestDetailView
 
+class TestLoginView(TemplateBaseViews):
+    template_name = "test_login.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['message'] = "You are logged in!"
+        return context
+
+# Add the URL pattern in urls.py
 urlpatterns = [
+    path('request/<int:pk>', RequestDetailView.as_view(), name="request_page"),
     path('users/', include('users.urls')),
     path('course_manager/', include('course_manager.urls')),
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += [
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
+    path('test-login/', TestLoginView.as_view(), name='test_login'),
+]
+

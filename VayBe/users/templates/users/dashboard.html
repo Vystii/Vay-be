@@ -13,53 +13,58 @@
 {% endblock %}
 
 {% block content_class %}
-  container
+
 {% endblock %}
 
 {% block pageTitle %}
-  <div class="">
-    <h1>{{ title }}</h1>
+  <div class="title-section bg-black d-flex justify-content-center py-4">
+    <div>
+      <h1 class="text-center text-white fw-bold mb-0">{{ title }}</h1>
+    </div>
   </div>
 {% endblock %}
 
 {% block content %}
-  <div class="space-padding vaybe-dashboard">
-    <div class="row">
-      <div class="dashboard-user-info space-inner-px col-md-6 col-xl-4">
-        <h2 class="dashboad-studentinfo-section-title text-black text-uppercase double-dots-title circle left primary mb-5">Your infos</h2>
-        <table class="table table-borderless">
-          <tbody>
-            {% if user.name %}
-              <tr class="user--name">
-                <th scope="row" class="label">Name</th>
-                <td class="value">{{ user.name }}</td>
+  <div class="vaybe-dashboard">
+    <div>
+      <div class="body-header space-padding bg-white d-flex justify-content-center">
+        <div class="dashboard-user-info space-inner-px w-auto">
+          <h2 class="dashboad-studentinfo-section-title fw-bolder text-black text-uppercase double-dots-title dot-center text-center circle left primary mb-5">Your infos</h2>
+          <table class="table table-borderless">
+            <tbody>
+              {% if user.name %}
+                <tr class="user--name">
+                  <th scope="row" class="label">Name</th>
+                  <td class="value">{{ user.name }}</td>
+                </tr>
+              {% endif %}
+              {% if user.surname %}
+                <tr class="user--surname">
+                  <th scope="row" class="label">Prenom</th>
+                  <td class="value">{{ user.surname }}</td>
+                </tr>
+              {% endif %}
+              <tr class="user--matricule">
+                <th scope="row" class="label">Matricule</th>
+                <td class="value">{{ user.matricule }}</td>
               </tr>
-            {% endif %}
-            {% if user.surname %}
-              <tr class="user--surname">
-                <th scope="row" class="label">Prenom</th>
-                <td class="value">{{ user.surname }}</td>
+              <tr class="user--study-level">
+                <th scope="row" class="label">Niveau Etude</th>
+                <td class="value">{{ user.std_level }}</td>
               </tr>
-            {% endif %}
-            <tr class="user--matricule">
-              <th scope="row" class="label">Matricule</th>
-              <td class="value">{{ user.matricule }}</td>
-            </tr>
-            <tr class="user--study-level">
-              <th scope="row" class="label">Niveau Etude</th>
-              <td class="value">{{ user.std_level }}</td>
-            </tr>
-            <tr class="user--std-field">
-              <th scope="row" class="label">Filière</th>
-              <td class="value">{{ user.std_field }}</td>
-            </tr>
-          </tbody>
-        </table>
+              <tr class="user--std-field">
+                <th scope="row" class="label">Filière</th>
+                <td class="value">{{ user.std_field }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="space-inner-px space-inner-py dashboard-menu col-md-6 col-xl-8 bg-white border-radius-20">
-        <div class="row">
+
+      <div class="space-inner-px space-inner-py dashboard-menu container">
+        <div class="d-flex dashboard-blocks">
           {% for d_block in blocks %}
-            {% include './snippets/dashboard-block.html' with block=d_block container_class='col-4' only %}
+            {% include './snippets/dashboard-block.html' with block=d_block container_class='border-radius-5 dashboard-block bg-white d-flex' only %}
           {% endfor %}
         </div>
       </div>

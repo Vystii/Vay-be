@@ -16,8 +16,8 @@ class BaseViews:
         return super().dispatch(request, *args, **kwargs)
 
 # Create your views here.
-class LoginBaseViews(View, BaseViews):
+class LoginBaseViews( BaseViews, View):
     pass
     
-class TemplateBaseViews(TemplateView, BaseViews):
+class TemplateBaseViews(BaseViews, TemplateView):
     pass

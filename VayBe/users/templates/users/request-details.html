@@ -1,0 +1,69 @@
+<!-- templates/users/login.html -->
+{% extends 'users/dashboard.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load custom_filters %}
+
+{% block title %}
+  Dashboard
+{% endblock %}
+
+{% block header %}
+  <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
+{% endblock %}
+
+{% block bottom %}
+
+{% endblock %}
+
+{% block pageTitle %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="vaybe-dashboard course-details-page">
+    <div>
+      <div class="body-header bg-wbu-thirdly space-padding course-details-header d-flex justify-content-center">
+        <div class="course-info left primary mb-5">
+          <h2 class="dashboad-student info-section-title text-black text-uppercase center dot-center text-center double-dots-title circle primary mb-5">
+            <div class="request-status btn border-radius-20 btn-sm px-5 {% if ent_request.processed %}
+                
+                bg-success-subtle
+
+              {% else %}
+                
+                bg-warning-subtle
+
+              {% endif %}">
+              {% if ent_request.processed %}
+                {% trans 'Processed' %}
+              {% else %}
+                {% trans 'Waiting' %}
+              {% endif %}
+            </div>
+          </h2>
+        </div>
+      </div>
+      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=ent_request.body %}
+
+      <div class="course-details-teacher container py-5 mb-5">
+        <div class="row justify-content-around">
+          <div class="d-flex flex-column col-sm-6 col-md-4">
+            <h3>{% trans 'From:' %}</h3>
+            <div class="py-3 px-3 user-card flex-grow-1">
+              {% include 'users/snippets/user-block.html' with user=ent_request.sender icon='<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path fill="#80D25B" d="M39.294 13.23c.715 2.668 3.556 4.224 6.347 3.476 2.79-.748 10.074-7.876 10.074-7.876S45.843 6.3 43.053 7.047c-2.79.748-4.474 3.516-3.759 6.183m-13.579 0c-.715 2.667-3.556 4.223-6.346 3.475S9.294 8.83 9.294 8.83s9.872-2.53 12.663-1.783c2.79.748 4.473 3.516 3.758 6.183"/><path stroke="#22BA8E" stroke-linecap="round" stroke-width="2" d="M44 12c-6.627 0-12 5.373-12 12M20 12c6.627 0 12 5.373 12 12"/><path fill="#0A3586" d="M51.25 51.8V35h-38v16.8c0 2.32 8.507 4.2 19 4.2s19-1.88 19-4.2"/><path fill="#ED5144" d="M56.25 36h2v16h-2z"/><circle cx="57.25" cy="53" r="3" fill="#D3D824"/><path fill="#325AA6" d="M1 34.992 32.516 23 63.5 34.992l-30.984 9.955z"/></g></svg>' %}
+            </div>
+          </div>
+          <div class="d-flex flex-column col-sm-6 col-md-4">
+            <h3>{% trans 'To:' %}</h3>
+            <div class="py-3 px-3 user-card flex-grow-1">
+              {% include 'users/snippets/user-block.html' with user=ent_request.receiver %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

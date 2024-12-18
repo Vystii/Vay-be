@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Requests</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  </head>
+  <body class="bg-light">
+    <div class="container mt-5">
+      <h1>My Requests</h1>
+      {% if isTeacher %}
+        <p>Welcome, Teacher! Here are your requests:</p>
+      {% else %}
+        <p>Welcome, User! Here are your requests:</p>
+      {% endif %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Receiver</th>
+            <th>Processed</th>
+            <th>Body</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in school_requests %}
+            <tr>
+              <td>{{ request.id }}</td>
+              <td>{{ request.receiver }}</td>
+              <td>{{ request.processed|yesno:'Yes,No' }}</td>
+              <td>{{ request.body }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

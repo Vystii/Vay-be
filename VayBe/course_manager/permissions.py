@@ -17,5 +17,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 class IsTeachingOrPermissionDenied(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Write permissions are only allowed to the owner of the object
-        
+        perm = True
+        #check if the user iss a teacher
+        userPermissions = request.user.permission
         return  request.user in obj.teachers.all()

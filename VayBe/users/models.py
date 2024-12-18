@@ -1,9 +1,14 @@
+from ast import arg
 from typing import Iterable
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
+
+
 
 from v_utilities.validators import ModelValidator
 from v_utilities.models import ModelBase
@@ -84,6 +89,15 @@ class Users(ModelBase, AbstractUser):
     def year(self):
         return str(self.joinded_school)
 
+    def toDict(self):
+        return {
+            "username": self.username,
+            "joinged_school": self.joinded_school,
+            "is_staff": self.is_staff,
+            "first_name": self.first_name,
+            "last_name": self.last_name
+        }
+    
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email", "date_joined", "studies_level"]
@@ -112,19 +126,20 @@ class SchoolRequest( PropertyModels):
         limit_choices_to=models.Q(user_permissions__codename="handle_request") | models.Q(is_superuser= True) | models.Q(is_staff=True),
         blank=False
     )
-    # sender = models.ForeignKey(
-    #     Users,
-    #     verbose_name=_("sender"),
-    #     on_delete=models.CASCADE,
-    #     related_name="+",
-    #     blank= False
-    # )
-    processed = models.BooleanField(_("processed"), default= False)
-    
-    body = models.TextField(_("Body"), blank=False)
-    
+    processed = models.BooleanField(_("processed"), default= False)    
+    body = CKEditor5Field(_("Body"), blank=True, null=True)
     class Meta:
         abstract = False
     
     REQUIRED_FIELDS = ["receiver", "sender", "body"]
     
+    def toDict(self, keepDicts= False):
+        url = reverse("request_page", args= [self.pk])
+        return {
+            "id": self.id,
+            "receiver": self.receiver.toDict() if keepDicts else  f"{self.receiver.last_name} {self.receiver.first_name}",
+            "sender": self.owner.toDict() if keepDicts else f"{self.owner.last_name} {self.owner.first_name}",
+            "processed": self.processed,
+            "body": self.body, 
+            "url": url
+        }

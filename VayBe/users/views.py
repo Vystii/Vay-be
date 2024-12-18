@@ -1,11 +1,16 @@
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.http.response import HttpResponse as HttpResponse
 from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.views import LoginView
 from v_utilities.views import LoginBaseViews, TemplateBaseViews
 from course_manager.views import UserCourses
 from django.contrib import messages
-from .models import Users
+from .models import Users, SchoolRequest
 from .dashboard_block.plugin_manager import PluginManager
+from django.db.models import Q
+import json
 
 class GetCourse(LoginBaseViews):    
     class meta:
@@ -44,3 +49,66 @@ class CustomLoginView(LoginView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password')
         return super().form_invalid(form)
+
+class RequestDetailView(TemplateBaseViews):
+    template_name = "users/request-details.html"
+    context_object_name = 'request'
+
+    # def get_object(self):
+    #     request_id = self.kwargs.get('pk')
+    #     return get_object_or_404(SchoolRequest, pk=request_id).toDict(True)
+
+    def get_context_data(self, pk):
+        context = super().get_context_data(pk = pk)
+        print(context)
+        user = self.request.user
+        context["ent_request"] = get_object_or_404(SchoolRequest, pk=pk).toDict(True)
+        # Check if the user has the 'teach' permission or is a superuser
+        isTeacher = user.user_permissions.filter(codename='teach').exists() or user.is_superuser
+        context['isTeacher'] = isTeacher
+        # context["ent_request"] = context["view"]
+        return context
+
+
+class MyRequestsPage(TemplateBaseViews):
+    template_name = "v_utilities/dashboard-table.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # Check if the user has the 'teach' permission or is a superuser
+        isTeacher = user.user_permissions.filter(codename='teach').exists() or user.is_superuser
+        context['isTeacher'] = isTeacher
+
+        # Retrieve SchoolRequest objects where the user is either owner or receiver
+        school_requests = SchoolRequest.objects.filter(Q(owner=user) | Q(receiver=user))
+        source_url = reverse("user_request",)  # Assuming you have a URL pattern for fetching data
+
+        # Table settings
+        tableSettings = {
+            "actions": [
+                {"label": "action1", "class": "url", "token": "action1"},
+                {"label": "action2", "class": "url", "token": "action2"},
+            ],
+            "table_header": [
+                {"label": "ID", "id": "id"},
+                {"label": str(_("Receiver")), "id": "receiver"},
+                {"label": str(_("Sender")), "id": "sender"},
+                {"label": str(_("Processed")), "id": "processed"},
+            ]
+        }
+        context.update({
+            "header": {"title": _("Your Requests")},
+            "data_source": source_url,
+            "tableSettings": tableSettings,
+            "jsonSettings": json.dumps(tableSettings),
+            'school_requests': school_requests
+        })
+        return context
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        user = request.user
+        school_requests = SchoolRequest.objects.filter(Q(owner=user) | Q(receiver=user))
+        school_requests_data = [request.toDict() for request in school_requests]
+        return JsonResponse(school_requests_data, safe=False)

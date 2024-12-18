@@ -1,0 +1,16 @@
+<div class="entity-details-content box-shadow space-inner-px space-inner space-padding container mb-5">
+  {% if body %}
+    <h2 class="text-dark">{{ body_title|default:'Description' }}</h2> <div>{{ body|safe }}</div>
+  {% endif %}
+  {% if files %}
+    <h2>{{ file_title|default:'Attachement Files' }}</h2>
+    <ul class="list-group">
+      {% for file in files %}
+        <li class="list-group-item d-flex alin-items-center">
+          <span class="flex-grow-1 d-flex align-items-center">{{ file.file.name }}</span>
+          <a href="{{ file.file.url }}" class="btn-outline-light fw-bold btn btn-primary" download>Download PDF</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
