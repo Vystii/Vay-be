@@ -45,3 +45,6 @@ urlpatterns += [
     path('test-login/', TestLoginView.as_view(), name='test_login'),
 ]
 
+urlpatterns += [
+    path("scheduling/",include("scheduling.urls")) 
+]
