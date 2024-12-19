@@ -44,7 +44,6 @@ class SchedulingService:
     @staticmethod
     def get_all_rooms():
         url = SchedulingService.ROOMS_URL
-        print("url : " + url)   
         response = requests.get(url)
         return response.json()
 
@@ -56,7 +55,6 @@ class SchedulingService:
 
     @staticmethod
     def create_room(room_data):
-        print("datas: ", room_data)
         url = SchedulingService.ROOMS_URL
         response = requests.post(url, json=room_data)
         return response.json()
@@ -65,12 +63,10 @@ class SchedulingService:
     def update_room(room_id, room_data):
         url = f'{SchedulingService.ROOMS_URL}/{room_id}'
         response = requests.put(url, json=room_data)
-        print(response.text)
         return response.json()
 
     @staticmethod
     def delete_room(room_id):
         url = f'{SchedulingService.ROOMS_URL}/{room_id}'
         response = requests.delete(url)
-        print("deletion: " + response.text)
         return response.status_code

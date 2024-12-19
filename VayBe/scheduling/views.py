@@ -1,7 +1,10 @@
+import random
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .services import SchedulingService
 
+from .models import SchoolClass
+from .services import SchedulingService
+from course_manager.models import Course
 # List all rooms
 def list_rooms(request):
     rooms = SchedulingService.get_all_rooms()
@@ -45,17 +48,34 @@ def delete_room(request, room_id):
 
 # Generate schedule
 def generate_schedule(request):
+    courses = Course.objects.all()
+    schoolClasses = SchoolClass.objects.all()
     response = None
     if request.method == 'POST':
         schedule_request = {
             "granularity": int(request.POST.get('granularity')),
-            "courses": [],  # Add course details as needed
+            "courses": [
+                {
+                    "id": course.id,
+                    "level": course.study_level.code,
+                    "schoolClassId": f"{course.study_field.code}_{course.study_level.code}"
+                } for course in courses
+            ],
             "weekdays": [1, 2, 3, 4, 5],
-            "rooms": {},  # Add room details as needed
-            "schoolClasses": {}  # Add school class details as needed
+            "schoolClasses": {
+                "shouldDeleteSchoolClass": False,
+                "data": [
+                    {
+                        "name": f"{s_class.study_field.code}_{s_class.study_level.code}",
+                        "numberOfStudents": s_class.expected_students,
+                        "level": s_class.study_level.code        
+                    } for s_class in schoolClasses
+                ]
+            }  # Add school class details as needed
         }
+        print(schedule_request)
         response = SchedulingService.generate_schedule(schedule_request)
-    return render(request, 'generate_schedule.html', {'response': response})
+    return render(request, 'scheduling/generate_schedule.html', {'response': response})
 
 # View all schedules
 def view_schedules(request):
