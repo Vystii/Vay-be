@@ -1,0 +1,1 @@
+/home/vysti/Documents/Privates/siteweb/AppVuejs/vaybe-manage-schedule/files/schedule-manager.js

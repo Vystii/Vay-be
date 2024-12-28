@@ -3,6 +3,7 @@ import requests
 class SchedulingService:
     BASE_URL = 'http://localhost:8080/api/schedules'
     ROOMS_URL = 'http://localhost:8080/api/rooms'
+    SETTINGS_URL = 'http://localhost:8080/api/settings'
 
     @staticmethod
     def generate_schedule(schedule_request):
@@ -11,8 +12,8 @@ class SchedulingService:
         return response.json()
 
     @staticmethod
-    def add_schedule(schedule):
-        url = f'{SchedulingService.BASE_URL}/add'
+    def add_schedule(schedule, room_id: str):
+        url = f'{SchedulingService.BASE_URL}/add?roomId={room_id}'
         response = requests.post(url, json=schedule)
         return response.json()
 
@@ -40,7 +41,7 @@ class SchedulingService:
         response = requests.put(url, json=schedule)
         return response.json()
 
-    # New methods for room operations
+    # Methods for room operations
     @staticmethod
     def get_all_rooms():
         url = SchedulingService.ROOMS_URL
@@ -70,3 +71,10 @@ class SchedulingService:
         url = f'{SchedulingService.ROOMS_URL}/{room_id}'
         response = requests.delete(url)
         return response.status_code
+
+    # New method to retrieve settings
+    @staticmethod
+    def get_settings(settings_id):
+        url = f'{SchedulingService.SETTINGS_URL}/1'
+        response = requests.get(url)
+        return response.json()
