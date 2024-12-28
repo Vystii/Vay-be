@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 import json
 from .models import Course
 from django.urls import reverse
-from course_manager.models import Course as ModelCourse
 from django.views.generic import DetailView
 
 
@@ -56,8 +55,8 @@ class UserCourses(LoginBaseViews):
         std_field = user.study_field.code
         std_level = user.study_level.code
         if(user.has_perm("teach")):
-            return ModelCourse.getCourses( year = year, teachers=user)
-        return ModelCourse.getCourses(study_field_id=std_field, study_level_id = std_level, year = year)
+            return Course.getCourses( year = year, teachers=user)
+        return Course.getCourses(study_field_id=std_field, study_level_id = std_level, year = year)
         
     def post(self, request:HttpRequest, user_matricule:str, year:int=timezone.now().year):
         courses = list()
@@ -72,7 +71,7 @@ class ClassCourses(LoginBaseViews):
     class meta:
         abstract = False
     def get(self, request:HttpRequest, study_field:str, study_level:str, year:int=timezone.now().year):
-        courses = ModelCourse.getCourses(study_field_id = study_field, study_level_id = study_level, year = year )
+        courses = Course.getCourses(study_field_id = study_field, study_level_id = study_level, year = year )
         return JsonResponse(courses, safe=False)
 
 class Note(LoginBaseViews):
@@ -89,7 +88,12 @@ class CourseDetailView(DetailView):
     context_object_name = 'course'
     
     def get_object(self):
-        year = self.kwargs.get('year')
-        code_ue = self.kwargs.get('code_ue')
-        course = get_object_or_404(Course, year=year, code_ue=code_ue)
+        course = None
+        if(self.kwargs.get('course_id')):
+            print("*************************************************\n"+self.kwargs.get('course_id'))
+            course  =  get_object_or_404(Course, pk=self.kwargs.get('course_id'))
+        else:
+            year = self.kwargs.get('year')
+            code_ue = self.kwargs.get('code_ue')
+            course = get_object_or_404(Course, year=year, code_ue=code_ue)
         return course.toDict()
