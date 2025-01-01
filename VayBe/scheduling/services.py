@@ -1,5 +1,5 @@
 import requests
-
+import json
 class SchedulingService:
     BASE_URL = 'http://localhost:8080/api/schedules'
     ROOMS_URL = 'http://localhost:8080/api/rooms'
@@ -77,4 +77,20 @@ class SchedulingService:
     def get_settings(settings_id):
         url = f'{SchedulingService.SETTINGS_URL}/1'
         response = requests.get(url)
+        return response.json()
+    
+    @staticmethod
+    def get_courses_schedules(coursesIds: list[int]):
+        print(f"courses_id: {coursesIds}")
+        data = json.dumps(coursesIds)
+        print(SchedulingService.BASE_URL + "/get-courses-schedules")
+        headers = {
+            "Content-Type": "application/json"
+        }
+        response = requests.post(
+            url  = SchedulingService.BASE_URL + "/get-courses-schedules", 
+            data = data,
+            headers = headers
+        )
+        # print(response.text)
         return response.json()

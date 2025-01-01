@@ -11,12 +11,15 @@
 {% block pageTitle %}
   <div class="title-section bg-black d-flex justify-content-center py-4">
     <div>
-      <h1 class="text-center text-white fw-bold mb-0"> hello world</h1>
+      <h1 class="text-center text-uppercase text-white fw-bold mb-0"> Scheduling</h1>
     </div>
   </div>
 {% endblock %}
+          {% block banner_label %}
+  Your schedules
+{%  endblock %}
 
 {% block content_table %}
-    <div id="app" data-url-get-schedules="{% url 'view_schedules'%}" data-course-url="/course-manager/course/[id]">
+    <div id="app" data-url-get-schedules="{{url}}"  data-csrf-token="{{ csrf_token }}" data-course-url="/course-manager/course/[id]">
     </div>
 {% endblock %}

@@ -54,12 +54,11 @@ class Users(ModelBase, AbstractUser):
     
     def save(self, force_insert: bool = ..., force_update: bool = ..., using: str | None = ..., update_fields: Iterable[str] | None = ...) -> None:
         if not self.username:
-            # Get the last two digits of the year
             year_suffix = str(self.year)[-2:]
-            # Generate the next unique letter and 4-digit combination
             next_unique = self.get_next_unique()
-            # Combine to form the username
             self.username = f"{year_suffix}{next_unique}"
+        if self.pk is None and self.password:
+            self.set_password(self.password)
         return super().save()
     
     def get_next_unique(self):

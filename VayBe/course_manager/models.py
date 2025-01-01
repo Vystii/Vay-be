@@ -59,6 +59,7 @@ class Course(ModelBase):
 
     def toDict(self):
         return {
+            "id": self.id,
             "year": self.year,
             "status": self.status,
             "label": self.label,

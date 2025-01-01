@@ -7,6 +7,18 @@ from django.core import validators
 from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
+class SiteConfiguration(models.Model):
+    config_name = models.CharField(_("Config name"), primary_key=True, max_length=255)
+    config_value = models.TextField(_("Value"), blank=True, null=True)
+    # Add other settings fields as needed
+
+    def __str__(self):
+        return self.config_name
+
+    class Meta:
+        verbose_name = _("Site Configuration")
+        verbose_name_plural = _("Site Configurations")
+
 class StudyLevel(models.Model):
     level_validator = validators.MinValueValidator(1)
     level = models.IntegerField(_("level"), unique=True, validators=[level_validator])

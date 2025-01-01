@@ -3,13 +3,14 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from django.utils import timezone
 from v_utilities.views import LoginBaseViews, TemplateBaseViews
+from v_utilities.models import SiteConfiguration
+from v_utilities.services import VUtilitiesService
 from users.models import Users
 from django.utils.translation import gettext_lazy as _
 import json
 from .models import Course
 from django.urls import reverse
 from django.views.generic import DetailView
-
 
 class CoursesPage(TemplateBaseViews):
     class meta:
@@ -19,7 +20,7 @@ class CoursesPage(TemplateBaseViews):
     def get_context_data(self, **kwargs):
         courses = list()
         user_matricule = self.request.user.username
-        year = int(timezone.now().year)
+        year = VUtilitiesService.getCurrentYear()
         source_url = reverse("user_course", kwargs={"user_matricule":user_matricule}) 
         tableSettings ={
             "actions": [
@@ -50,7 +51,7 @@ class CoursesPage(TemplateBaseViews):
 # class UserCourses(View):
 class UserCourses(LoginBaseViews):
     @staticmethod
-    def getCourses(user_matricule:str, year:int = timezone.now().year):
+    def getCourses(user_matricule:str, year:int = VUtilitiesService.getCurrentYear()):
         user = get_object_or_404(Users, username =user_matricule)
         std_field = user.study_field.code
         std_level = user.study_level.code
@@ -70,7 +71,7 @@ class UserCourses(LoginBaseViews):
 class ClassCourses(LoginBaseViews):
     class meta:
         abstract = False
-    def get(self, request:HttpRequest, study_field:str, study_level:str, year:int=timezone.now().year):
+    def get(self, request:HttpRequest, study_field:str, study_level:str, year:int=VUtilitiesService.getCurrentYear()):
         courses = Course.getCourses(study_field_id = study_field, study_level_id = study_level, year = year )
         return JsonResponse(courses, safe=False)
 
@@ -90,10 +91,11 @@ class CourseDetailView(DetailView):
     def get_object(self):
         course = None
         if(self.kwargs.get('course_id')):
-            print("*************************************************\n"+self.kwargs.get('course_id'))
             course  =  get_object_or_404(Course, pk=self.kwargs.get('course_id'))
         else:
             year = self.kwargs.get('year')
+            if year is None:
+                year = VUtilitiesService.getCurrentYear()
             code_ue = self.kwargs.get('code_ue')
             course = get_object_or_404(Course, year=year, code_ue=code_ue)
         return course.toDict()

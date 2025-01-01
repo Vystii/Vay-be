@@ -1,20 +1,24 @@
-import array
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import JsonResponse
+from django.views import View
 from django.core.handlers.wsgi import WSGIRequest
-
+from v_utilities.views import LoginBaseViews, TemplateBaseViews
+from course_manager.views import UserCourses
 from .models import SchoolClass
 from .services import SchedulingService
 from course_manager.models import Course
 
-# List all rooms
-def list_rooms(request: WSGIRequest):
-    rooms = SchedulingService.get_all_rooms()
-    return render(request, 'scheduling/list_rooms.html', {'rooms': rooms})
+class ListRoomsView(View):
+    def get(self, request: WSGIRequest):
+        rooms = SchedulingService.get_all_rooms()
+        return render(request, 'scheduling/list_rooms.html', {'rooms': rooms})
 
-# Create a new room
-def create_room(request: WSGIRequest):
-    if request.method == 'POST':
+class CreateRoomView(View):
+    def get(self, request: WSGIRequest):
+        return render(request, 'scheduling/create_room.html')
+    
+    def post(self, request: WSGIRequest):
         room_data = {
             'id': request.POST.get('id'),
             'name': request.POST.get('name'),
@@ -22,12 +26,13 @@ def create_room(request: WSGIRequest):
         }
         SchedulingService.create_room(room_data)
         return redirect('list_rooms')
-    return render(request, 'scheduling/create_room.html')
 
-# Update an existing room
-def update_room(request: WSGIRequest, room_id):
-    room = SchedulingService.get_room(room_id)
-    if request.method == 'POST':
+class UpdateRoomView(View):
+    def get(self, request: WSGIRequest, room_id):
+        room = SchedulingService.get_room(room_id)
+        return render(request, 'scheduling/update_room.html', {'room': room})
+    
+    def post(self, request: WSGIRequest, room_id):
         room_data = {
             'id': room_id,
             'name': request.POST.get('name'),
@@ -35,22 +40,23 @@ def update_room(request: WSGIRequest, room_id):
         }
         SchedulingService.update_room(room_id, room_data)
         return redirect('list_rooms')
-    return render(request, 'scheduling/update_room.html', {'room': room})
 
-# Delete a room
-def delete_room(request: WSGIRequest, room_id):
-    if request.method == 'POST' or request.method == 'GET':
+class DeleteRoomView(View):
+    def get(self, request: WSGIRequest, room_id):
+        room = SchedulingService.get_room(room_id)
+        return render(request, 'scheduling/delete_room.html', {'room': room})
+    
+    def post(self, request: WSGIRequest, room_id):
         SchedulingService.delete_room(room_id)
         return redirect('list_rooms')
-    room = SchedulingService.get_room(room_id)
-    return render(request, 'scheduling/delete_room.html', {'room': room})
 
-# Generate schedule
-def generate_schedule(request: WSGIRequest):
-    courses = Course.objects.all()
-    schoolClasses = SchoolClass.objects.all()
-    response = None
-    if request.method == 'POST':
+class GenerateScheduleView(View):
+    def get(self, request: WSGIRequest):
+        return render(request, 'scheduling/generate_schedule.html', {'response': None, 'test': 'test'})
+    
+    def post(self, request: WSGIRequest):
+        courses = Course.objects.all()
+        schoolClasses = SchoolClass.objects.all()
         schedule_request = {
             "granularity": int(request.POST.get('granularity')),
             "courses": [
@@ -73,18 +79,20 @@ def generate_schedule(request: WSGIRequest):
             }
         }
         response = SchedulingService.generate_schedule(schedule_request)
-    return render(request, 'scheduling/generate_schedule.html', {'response': response, "test": "test"})
+        return render(request, 'scheduling/generate_schedule.html', {'response': response, "test": "test"})
 
-# View all schedules
-def view_schedules(request: WSGIRequest):
-    schedules = SchedulingService.get_all_schedules()
-    return JsonResponse(schedules, safe=False)
+class ViewSchedulesView(View):
+    def post(self, request: WSGIRequest):
+        schedules = SchedulingService.get_all_schedules()
+        return JsonResponse(schedules, safe=False)
 
-# Add a new schedule
-def add_schedule(request: WSGIRequest):
-    if request.method == 'POST':
+class AddScheduleView(View):
+    def get(self, request: WSGIRequest):
+        return render(request, 'scheduling/add_schedule.html')
+    
+    def post(self, request: WSGIRequest):
         classe = SchoolClass.objects.get(pk=request.POST.get('class_id'))
-        course = Course.objects.get(pk=request.POST.get('course_id'))
+        course = Course.objects.get(pk=(request.POST.get('course_id')))
         schedule_data = {
             'title': request.POST.get('title'),
             'description': request.POST.get('description'),
@@ -94,32 +102,52 @@ def add_schedule(request: WSGIRequest):
         room_id = request.POST.get("room_id")
         SchedulingService.add_schedule(schedule_data, room_id)
         return redirect('view_schedules')
-    return render(request, 'scheduling/add_schedule.html')
+        
+class GetCoursesSchedulesView(View):
+    def post(self, request: WSGIRequest):
+        # ids = request.POST.get("course_ids")
+        courses = UserCourses.getCourses(request.user.username)
+        ids = [course["id"] for course in courses]
+        if not ids:
+            return JsonResponse({})
+        schedules = SchedulingService.get_courses_schedules(ids)
+        print("hello", schedules)
+        return JsonResponse(schedules, safe=False)
 
-# Remove a specific schedule
-def delete_schedule(request: WSGIRequest, schedule_id):
-    if request.method == 'POST':
+class DeleteScheduleView(View):
+    def get(self, request: WSGIRequest, schedule_id):
+        schedule = SchedulingService.get_schedule_by_id(schedule_id)
+        return render(request, 'scheduling/delete_schedule.html', {'schedule': schedule})
+    
+    def post(self, request: WSGIRequest, schedule_id):
         SchedulingService.delete_schedule(schedule_id)
         return redirect('view_schedules')
-    schedule = SchedulingService.get_schedule_by_id(schedule_id)
-    return render(request, 'scheduling/delete_schedule.html', {'schedule': schedule})
 
-# API endpoints for Django side data
-def get_school_classes(request):
-    classes = list(SchoolClass.objects.values())
-    return JsonResponse(classes, safe=False)
+class GetSchoolClassesView(View):
+    def get(self, request: WSGIRequest):
+        classes = list(SchoolClass.objects.values())
+        return JsonResponse(classes, safe=False)
 
-def get_courses(request):
-    courses = list(Course.objects.values())
-    return JsonResponse(courses, safe=False)
+class GetCoursesView(View):
+    def get(self, request: WSGIRequest):
+        courses = list(Course.objects.values())
+        return JsonResponse(courses, safe=False)
 
-# Vue.js template view
-def manage_schedules(request):
-    return render(request, 'scheduling/manage_schedules.html')
+class ManageSchedulesView(TemplateBaseViews):
+    template_name = 'scheduling/manage_schedules.html'
+    # def get(self, request: WSGIRequest):
+        # return render(request, '')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        print(user.toDict())
+        context["url"] = reverse("course_schedules")
+        return context
 
-def get_settings(request, settings_id):
-    try:
-        settings = SchedulingService.get_settings(settings_id)
-        return JsonResponse(settings, safe=False)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+class GetSettingsView(View):
+    def get(self, request: WSGIRequest, settings_id):
+        try:
+            settings = SchedulingService.get_settings(settings_id)
+            return JsonResponse(settings, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

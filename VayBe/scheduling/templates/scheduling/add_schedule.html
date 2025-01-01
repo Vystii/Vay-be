@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Schedule</title>
+  </head>
+  <body>
+    <h1>Add Schedule</h1>
+    <form method="post">
+      {% csrf_token %}
+      <div class="field-control">
+        <label for="title">Schedule Name:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+      <!-- Add other fields as necessary -->
+      <div class="field-control">
+        <label for="description">Schedule Desctiption:</label>
+        <input type="text" id="description" name="description" required />
+      </div>
+      <div class="field-control">
+        <label for="class_id">Schedule Class Id</label>
+        <input type="text" id="class_id" name="class_id" required />
+      </div>
+      <div class="field-control">
+        <label for="course_id">Schedule Course ID:</label>
+        <input type="text" id="course_id" name="course_id" required />
+      </div>
+      <div class="field-control">
+        <label for="room_id">room ID:</label>
+        <input type="text" id="room_id" name="room_id" required />
+      </div>
+      <button type="submit">Add Schedule</button>
+    </form>
+  </body>
+</html>

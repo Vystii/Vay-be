@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from v_utilities.views import TemplateBaseViews
 from users.views import RequestDetailView
-
+from debug_toolbar.toolbar import debug_toolbar_urls
 class TestLoginView(TemplateBaseViews):
     template_name = "test_login.html"
 
@@ -33,7 +33,7 @@ class TestLoginView(TemplateBaseViews):
 urlpatterns = [
     path('request/<int:pk>', RequestDetailView.as_view(), name="request_page"),
     path('users/', include('users.urls')),
-    path('course_manager/', include('course_manager.urls')),
+    path('course-manager/', include('course_manager.urls')),
     path('admin/', admin.site.urls),
 ]
 
@@ -47,4 +47,5 @@ urlpatterns += [
 
 urlpatterns += [
     path("scheduling/",include("scheduling.urls")) 
-]
+] 
+urlpatterns += debug_toolbar_urls()

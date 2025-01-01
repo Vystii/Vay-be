@@ -34,7 +34,11 @@
     <div>
       <div class="body-header space-padding bg-white d-flex justify-content-center">
         <div class="dashboard-user-info space-inner-px w-auto">
-          <h2 class="dashboad-studentinfo-section-title fw-bolder text-black text-uppercase double-dots-title dot-center text-center circle primary mb-5">Your infos</h2>
+          <h2 class="dashboad-studentinfo-section-title fw-bolder text-black text-uppercase double-dots-title dot-center text-center circle primary mb-5">
+          {% block banner_label %}
+          Your infos
+          {% endblock %}
+          </h2>
         </div>
       </div>
       <div id="v-table-container" class="container dashboard-table" data-settings="{{ jsonSettings }}" data-source-url="{{ data_source }}" data-csrf-token="{{ csrf_token }}">
