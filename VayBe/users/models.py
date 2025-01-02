@@ -148,8 +148,9 @@ class SchoolRequest( PropertyModels):
             "id": self.id,
             "receiver": self.receiver.toDict() if keepDicts else  f"{self.receiver.last_name} {self.receiver.first_name}",
             "sender": self.owner.toDict() if keepDicts else f"{self.owner.last_name} {self.owner.first_name}",
-            "processed": self.processed,
-            "body": self.body, 
+            "processed_class": " bg-success-subtle " if self.processed else " bg-warning-subtle ",
+            "body": self.body,
+            "files": [file.toDict() for file in self.schoolrequestfile_set.all()],
             "url": url
         }
         
@@ -164,7 +165,7 @@ class SchoolRequestFile(models.Model):
                 "name": self.file.name.split("/")[-1],
                 "url": self.file.url
             },
-            "school_request": self.school_request.toDict(True) if subDict else  self.school_request
+            "school_request":  self.school_request.id if subDict else self.school_request
         }
         
     def __str__(self):

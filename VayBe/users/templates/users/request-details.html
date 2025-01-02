@@ -29,23 +29,7 @@
         <div class="course-info left primary mb-5">
           <h2 class="dashboad-student info-section-title text-black text-uppercase center dot-center text-center double-dots-title circle primary mb-5">
             {% with elementClass='request-status btn border-radius-20 btn-sm px-5' %}
-              <div class=" {{ elementClass }} {% if ent_request.processed %}
-                  
-                  
-                  
-                  bg-success-subtle
-
-
-
-                {% else %}
-                  
-                  
-                  
-                   bg-warning-subtle
-
-
-
-                {% endif %}">
+              <div class=" {{ elementClass }} {{ ent_request.processed_class }}">
                 {% if ent_request.processed %}
                   {% trans 'Processed' %}
                 {% else %}
@@ -56,7 +40,7 @@
           </h2>
         </div>
       </div>
-      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=ent_request.body can_edit=can_edit modal_id=modal_id formset=formset %}
+      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' files=ent_request.files body=ent_request.body can_edit=can_edit modal_id=modal_id formset=formset %}
       <div class="course-details-teacher container position-relative py-5 mb-5">
         <div class="row justify-content-around">
           <div class="d-flex flex-column col-sm-6 col-md-4">
