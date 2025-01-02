@@ -1,3 +1,4 @@
+from django.forms import modelformset_factory
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login
 from django.urls import reverse
@@ -9,8 +10,8 @@ from django.views import View
 from v_utilities.views import LoginBaseViews, TemplateBaseViews
 from course_manager.views import UserCourses
 from django.contrib import messages
-from .models import Users, SchoolRequest
-from .forms import CustomUserCreationForm
+from .models import SchoolRequestFile, Users, SchoolRequest
+from .forms import CustomUserCreationForm, SchoolRequestFileForm, SchoolRequestForm
 from .dashboard_block.plugin_manager import PluginManager
 from django.db.models import Q
 import json
@@ -53,24 +54,51 @@ class CustomLoginView(LoginView):
         messages.error(self.request, 'Invalid username or password')
         return super().form_invalid(form)
 
-class RequestDetailView(TemplateBaseViews):
+class RequestDetailView(LoginBaseViews):
     template_name = "users/request-details.html"
     context_object_name = 'request'
 
-    # def get_object(self):
-    #     request_id = self.kwargs.get('pk')
-    #     return get_object_or_404(SchoolRequest, pk=request_id).toDict(True)
+    def get(self, request,  pk):
+        datas = self.get_context_data(pk)
+        
+        return render(request, self.template_name, datas)
+
+    def post(self, request, pk):
+        school_request_instance = get_object_or_404(SchoolRequest, pk=pk)
+        form = SchoolRequestForm(request.POST, instance=school_request_instance)
+        CourseFileFormSet = modelformset_factory(SchoolRequestFile, form=SchoolRequestFileForm, extra=10)
+        
+        formset = CourseFileFormSet(request.POST, request.FILES, queryset=SchoolRequestFile.objects.filter(school_request=school_request_instance))
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            filesForm = formset.save(commit=False)
+            
+            for fileForm in filesForm:
+                fileForm.school_request = school_request_instance
+                fileForm.save()
+            datas = self.get_context_data(pk)
+        else:
+            datas = self.get_context_data(pk)
+            datas['formset']['form'] = form
+            datas['formset']['fileForm'] = form
+            
+        datas['formset']['form'] = form
+        return render(request, self.template_name, datas)
 
     def get_context_data(self, pk):
-        context = super().get_context_data(pk = pk)
-        print(context)
         user = self.request.user
-        context["ent_request"] = get_object_or_404(SchoolRequest, pk=pk).toDict(True)
-        # Check if the user has the 'teach' permission or is a superuser
-        isTeacher = user.user_permissions.filter(codename='teach').exists() or user.is_superuser
-        context['isTeacher'] = isTeacher
-        # context["ent_request"] = context["view"]
-        return context
+        schoolRequest = get_object_or_404(SchoolRequest, pk=pk)
+        form = SchoolRequestForm(instance=schoolRequest)
+        CourseFileFormSet = modelformset_factory(SchoolRequestFile, form=SchoolRequestFileForm, extra=1)
+        files = SchoolRequestFile.objects.filter(school_request=schoolRequest)
+        fileForm = CourseFileFormSet(queryset=files)
+        return {
+            "isTeacher": user.user_permissions.filter(codename='teach').exists() or user.is_superuser,
+            "can_edit":True if True else schoolRequest["sender"]["username"] == user.username,
+            "modal_id": "form_edit_request",
+            "ent_request": schoolRequest.toDict(True),
+            "formset": {"form": form,  "fileForm": fileForm}
+        }
 
 
 class MyRequestsPage(TemplateBaseViews):
