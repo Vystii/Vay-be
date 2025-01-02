@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core import validators
 
 
 
@@ -14,6 +15,11 @@ from v_utilities.validators import ModelValidator
 from v_utilities.models import ModelBase
 
   
+def validate_pdf(value):
+    if not value.name.endswith('.pdf'):
+        raise validators.ValidationError(_("Only PDF files are allowed."))
+
+
 class Users(ModelBase, AbstractUser):
     class Meta:
         permissions = [
@@ -133,6 +139,9 @@ class SchoolRequest( PropertyModels):
     
     REQUIRED_FIELDS = ["receiver", "sender", "body"]
     
+    def __str__(self):
+        return f"({self.id}) - {self.owner} -> {self.receiver}"
+    
     def toDict(self, keepDicts= False):
         url = reverse("request_page", args= [self.pk])
         return {
@@ -143,3 +152,20 @@ class SchoolRequest( PropertyModels):
             "body": self.body, 
             "url": url
         }
+        
+        
+class SchoolRequestFile(models.Model):
+    school_request = models.ForeignKey(SchoolRequest, on_delete=models.CASCADE, null = False, blank = True)
+    file = models.FileField(_("file"), upload_to='uploads/pdfs/', validators=[validate_pdf])
+
+    def toDict(self, subDict=False):
+        return {
+            "file" : {
+                "name": self.file.name.split("/")[-1],
+                "url": self.file.url
+            },
+            "school_request": self.school_request.toDict(True) if subDict else  self.school_request
+        }
+        
+    def __str__(self):
+        return f"{self.id} File schoolrequest"

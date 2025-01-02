@@ -1,3 +1,4 @@
+from typing import Required
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -15,6 +16,9 @@ def validate_pdf(value):
 
 class Course(ModelBase):
     # Ensure the validator also works when creating a user directly in the code
+    def __str__(self):
+        return f"{self.code_ue}-{self.label}"
+    
     codeUeValidator = validators.RegexValidator(
         regex=r"^[A-Z]{3,4}\d{3,4}$",
         message=_("The UE code must start with 3 letters followed by 3 or 4 numbers")
@@ -80,7 +84,7 @@ class Course(ModelBase):
         return [course.toDict() for course in courses]
 
 class CourseFile(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null = False, blank = True)
     file = models.FileField(_("file"), upload_to='uploads/pdfs/', validators=[validate_pdf])
 
     def toDict(self):
