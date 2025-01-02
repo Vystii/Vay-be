@@ -111,7 +111,6 @@ class GetCoursesSchedulesView(View):
         if not ids:
             return JsonResponse({})
         schedules = SchedulingService.get_courses_schedules(ids)
-        print("hello", schedules)
         return JsonResponse(schedules, safe=False)
 
 class DeleteScheduleView(View):

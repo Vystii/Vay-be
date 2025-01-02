@@ -6,9 +6,11 @@
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
   <link rel="stylesheet" href="{% static 'users/css/course-details.css' %}" />
-{% endblock %} {% block bottom %}
-
-{% endblock %} {% block pageTitle %}
+{% endblock %}
+{% block bottom %}
+  {{ block.super }}
+{% endblock %}
+{% block pageTitle %}
   <div>
     <h2 class="text-black">Détails du cours</h2>
   </div>
@@ -45,7 +47,7 @@
           </table>
         </div>
       </div>
-      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=course.description files=course.files %}
+      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=course.description files=course.files can_edit=can_edit modal_id=modal_id formset=formset %}
 
       <div class="course-details-teacher container py-5 mb-5">
         <div class="row justify-content-around">

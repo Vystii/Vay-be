@@ -26,7 +26,11 @@ class CourseFileInline(admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
     form = CourseAdminForm
     inlines = [CourseFileInline]
+    list_display = ["str_display", "id", "year", "code_ue"]
     empty_value_display = "-empty-"
+    def str_display(self, obj):
+        return str(obj)
+    str_display.short_description = 'Verbose Name'
 
 @admin.register(CourseFile)
 class CourseAdmin(admin.ModelAdmin):

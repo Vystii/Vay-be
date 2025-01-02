@@ -23,6 +23,7 @@ class CoursesPage(TemplateBaseViews):
         courses = list()
         user_matricule = self.request.user.username
         year = VUtilitiesService.getCurrentYear()
+        
         source_url = reverse("user_course", kwargs={"user_matricule":user_matricule}) 
         tableSettings ={
             "actions": [
@@ -59,9 +60,9 @@ class UserCourses(LoginBaseViews):
         std_level = user.study_level.code
         if(user.has_perm("teach")):
             return Course.getCourses( year = year, teachers=user)
-        return Course.getCourses(study_field_id=std_field, study_level_id = std_level, year = year)
+        return Course.getCourses(study_field_id=std_field, study_level_id = std_level, year = year, status = True)
         
-    def post(self, request:HttpRequest, user_matricule:str, year:int=timezone.now().year):
+    def post(self, request:HttpRequest, user_matricule:str, year:int=VUtilitiesService.getCurrentYear()):
         courses = list()
         if user_matricule is not None:
             courses = UserCourses.getCourses(user_matricule, year=year)
@@ -89,12 +90,39 @@ class CourseDetailView(LoginBaseViews):
     template_name = "course_manager/course-details.html"
     context_object_name = 'course'
 
-    def get(self, request, course_id):
-        datas = self.get_context_data(course_id)
-        datas["course" ] = datas["course_details"]
+
+    def getDatas(self, kwargs):
+        if "course_id" in kwargs:
+            course_id = kwargs["course_id"]
+            datas = self.get_context_data(course_id)
+            datas["course" ] = datas["course_details"]
+            return datas
+        elif "code_ue" in kwargs:
+            code_ue = kwargs["code_ue"]
+            year = kwargs["year"] if "year" in kwargs else VUtilitiesService.getCurrentYear()
+            course = get_object_or_404(Course, code_ue=code_ue, year=year)
+            datas = self.get_context_data(course.id)
+            datas["course" ] = datas["course_details"]
+            return datas
+        return None
+    
+    def get(self, request, *args, **kwargs):
+        datas = self.getDatas(kwargs)
+        if datas is None:
+            return HttpResponse("404")
         return render(request, self.template_name, datas)
     
-    def post(self, request, course_id):
+    def post(self, request, *args, **kwargs):
+        course_id = None
+        if "course_id" in kwargs:
+            course_id = kwargs["course_id"]
+        elif "code_ue" in kwargs:
+            code_ue = kwargs["code_ue"]
+            year = kwargs["year"] if "year" in kwargs else VUtilitiesService.getCurrentYear()
+            course = get_object_or_404(Course, code_ue=code_ue, year=year)
+            course_id = course.id
+        else:
+            return HttpResponse("404")
         course_instance = get_object_or_404(Course, id=course_id)
         form = CourseForm(request.POST, instance=course_instance)
         CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=10)
@@ -121,7 +149,6 @@ class CourseDetailView(LoginBaseViews):
         form = CourseForm(instance=course)
         CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=1)
         fileForm = CourseFileFormSet(queryset=CourseFile.objects.filter(course=course))
-        print(f"******************\form: {form}\formset: {CourseFileFormSet}\n***************************")
         return {
             "isTeacher": user.user_permissions.filter(codename='teach').exists() or user.is_superuser,
             "can_edit":  user in [teacher for teacher in course.teachers.all()],
@@ -156,7 +183,6 @@ class CourseCreateView(View):
                 courseFile.save()
             return redirect('user_course_page')  # Change this to the name of your course list view
         else:
-            # print(f"******************\nerror_message: {formset.error_messages}\n***************************")
             # add message
             pass
         return render(request, self.template_name, {'form': form, 'formset': formset})
