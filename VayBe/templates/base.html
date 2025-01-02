@@ -3,33 +3,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      {% block title %}
-        Vaybe
-      {% endblock %}
-    </title>
+    <title>{% block title %} Vaybe {% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="{% static 'css/vaybe-default.css' %}" />
-    {% block header %}
-
-    {% endblock %}
+    {% block header %} {% endblock %}
   </head>
   <body>
     <div class="vaybe-body-template bg-body-tertiary">
-      <div class="vaybe-content {% block content_class %}
-        {% endblock %}">
-        {% block pageTitle %}
-
-        {% endblock %}
-        {% block content %}
-          <!-- Content from child templates will be inserted here -->
+      <div class="vaybe-content {% block content_class %} {% endblock %}">
+        {% block pageTitle %} {% endblock %} {% block content %}
+        <!-- Content from child templates will be inserted here -->
         {% endblock %}
       </div>
     </div>
-    {% block bottom %}
-
-    {% endblock %}
+    <script src="{% static 'js/vaybe-default.js' %}"></script>
+    {% block bottom %} {% endblock %}
   </body>
 </html>

@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
 from django.utils import timezone
 from v_utilities.views import LoginBaseViews, TemplateBaseViews
@@ -8,9 +8,11 @@ from v_utilities.services import VUtilitiesService
 from users.models import Users
 from django.utils.translation import gettext_lazy as _
 import json
-from .models import Course
+from .models import Course, CourseFile
 from django.urls import reverse
 from django.views.generic import DetailView
+from django.forms import modelformset_factory
+from .forms import CourseForm, CourseFileForm
 
 class CoursesPage(TemplateBaseViews):
     class meta:
@@ -99,3 +101,33 @@ class CourseDetailView(DetailView):
             code_ue = self.kwargs.get('code_ue')
             course = get_object_or_404(Course, year=year, code_ue=code_ue)
         return course.toDict()
+    
+
+class CourseCreateView(View):
+    template_name = 'v_utilities/form-base.html'
+
+    def get(self, request):
+        form = CourseForm()
+        CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=1)
+        formset = CourseFileFormSet(queryset=CourseFile.objects.none())
+        return render(request, self.template_name, {'form': form, 'formset': formset})
+
+    def post(self, request):
+        form = CourseForm(request.POST, request.FILES)
+        CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=1)
+        formset = CourseFileFormSet(request.POST, request.FILES, queryset=CourseFile.objects.none())
+
+        if form.is_valid() and formset.is_valid():
+            
+            course = form.save()
+            # formset.
+            courseFiles = formset.save(commit=False)
+            for courseFile in courseFiles:
+                courseFile.course = course
+                courseFile.save()
+            return redirect('user_course_page')  # Change this to the name of your course list view
+        else:
+            # print(f"******************\nerror_message: {formset.error_messages}\n***************************")
+            # add message
+            pass
+        return render(request, self.template_name, {'form': form, 'formset': formset})

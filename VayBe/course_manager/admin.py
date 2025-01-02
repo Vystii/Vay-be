@@ -28,6 +28,10 @@ class CourseAdmin(admin.ModelAdmin):
     inlines = [CourseFileInline]
     empty_value_display = "-empty-"
 
+@admin.register(CourseFile)
+class CourseAdmin(admin.ModelAdmin):
+    pass
+
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
     pass

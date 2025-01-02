@@ -1,13 +1,16 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import login
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.http.response import HttpResponse as HttpResponse
 from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.views import LoginView
+from django.views import View
 from v_utilities.views import LoginBaseViews, TemplateBaseViews
 from course_manager.views import UserCourses
 from django.contrib import messages
 from .models import Users, SchoolRequest
+from .forms import CustomUserCreationForm
 from .dashboard_block.plugin_manager import PluginManager
 from django.db.models import Q
 import json
@@ -112,3 +115,31 @@ class MyRequestsPage(TemplateBaseViews):
         school_requests = SchoolRequest.objects.filter(Q(owner=user) | Q(receiver=user))
         school_requests_data = [request.toDict() for request in school_requests]
         return JsonResponse(school_requests_data, safe=False)
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('home')
+            # login(request, user)
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'accounts/register.html', {'form': form})
+
+class RegisterView(View):
+    template_name = 'v_utilities/form-base.html'
+    form_class = CustomUserCreationForm
+
+    def get(self, request):
+        form = self.form_class()
+        print(f"json form: {form.fields}")
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+        return render(request, self.template_name, {'form': form})

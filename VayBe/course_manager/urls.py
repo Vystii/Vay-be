@@ -10,4 +10,5 @@ urlpatterns = [
     path("notes", views.Note.as_view(), name="course"),
     path('course/<int:year>/<str:code_ue>', views.CourseDetailView.as_view(), name='course_detail'),
     path('course/<course_id>', views.CourseDetailView.as_view(), name='course_détails_id'),
+    path('create-course/', views.CourseCreateView.as_view(), name='create_course'),
 ]

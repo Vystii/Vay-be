@@ -59,6 +59,7 @@ class Users(ModelBase, AbstractUser):
             self.username = f"{year_suffix}{next_unique}"
         if self.pk is None and self.password:
             self.set_password(self.password)
+        # if not self.
         return super().save()
     
     def get_next_unique(self):
