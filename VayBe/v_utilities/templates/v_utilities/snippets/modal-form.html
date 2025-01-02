@@ -1,0 +1,20 @@
+<div class="modal fade" id="{{ modal_id|default:'exampleModal' }}" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{ modal_id|default:'exampleModal' }}Label">{{ title|default:'edit' }}</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-bs-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %} {{ formset.form.as_p }}
+          {% if formset.fileForm %}
+            {{ formset.fileForm.management_form }}
+            {{ formset.fileForm.as_p }}
+          {% endif %}
+          <button type="submit">{{ action_label|default:'register' }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

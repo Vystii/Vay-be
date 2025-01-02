@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block header %}
-  <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
 {% endblock %}
 
@@ -35,23 +35,23 @@
       <div class="body-header space-padding bg-white d-flex justify-content-center">
         <div class="dashboard-user-info space-inner-px w-auto">
           <h2 class="dashboad-studentinfo-section-title fw-bolder text-black text-uppercase double-dots-title dot-center text-center circle primary mb-5">
-          {% block banner_label %}
-          Your infos
-          {% endblock %}
+            {% block banner_label %}
+              Your infos
+            {% endblock %}
           </h2>
         </div>
       </div>
       <div id="v-table-container" class="container dashboard-table" data-settings="{{ jsonSettings }}" data-source-url="{{ data_source }}" data-csrf-token="{{ csrf_token }}">
         {% block content_table %}
-        <table class="w-100 mb-1 custom-table table">
-          <thead>
-            <tr class="bg-dark">
-              {% for header in tableSettings.table_header %}
-                <th scope="col" class="py-5 px-3 text-white bg-dark">{{ header.label }}</th>
-              {% endfor %}
-            </tr>
-          </thead>
-        </table>
+          <table class="w-100 mb-1 custom-table table">
+            <thead>
+              <tr class="bg-dark">
+                {% for header in tableSettings.table_header %}
+                  <th scope="col" class="py-5 px-3 text-white bg-dark">{{ header.label }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+          </table>
         {% endblock %}
         <div class="table-placeholder placeholder-wave">
           <div class="placeholder mb-1 placeholder-lg"></div>

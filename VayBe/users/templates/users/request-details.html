@@ -10,12 +10,12 @@
 {% endblock %}
 
 {% block header %}
-  <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
 {% endblock %}
 
 {% block bottom %}
-
+  {{ block.super }}
 {% endblock %}
 
 {% block pageTitle %}
@@ -28,27 +28,36 @@
       <div class="body-header bg-wbu-thirdly space-padding course-details-header d-flex justify-content-center">
         <div class="course-info left primary mb-5">
           <h2 class="dashboad-student info-section-title text-black text-uppercase center dot-center text-center double-dots-title circle primary mb-5">
-            <div class="request-status btn border-radius-20 btn-sm px-5 {% if ent_request.processed %}
-                
-                bg-success-subtle
+            {% with elementClass='request-status btn border-radius-20 btn-sm px-5' %}
+              <div class=" {{ elementClass }} {% if ent_request.processed %}
+                  
+                  
+                  
+                  bg-success-subtle
 
-              {% else %}
-                
-                bg-warning-subtle
 
-              {% endif %}">
-              {% if ent_request.processed %}
-                {% trans 'Processed' %}
-              {% else %}
-                {% trans 'Waiting' %}
-              {% endif %}
-            </div>
+
+                {% else %}
+                  
+                  
+                  
+                   bg-warning-subtle
+
+
+
+                {% endif %}">
+                {% if ent_request.processed %}
+                  {% trans 'Processed' %}
+                {% else %}
+                  {% trans 'Waiting' %}
+                {% endif %}
+              </div>
+            {% endwith %}
           </h2>
         </div>
       </div>
-      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=ent_request.body %}
-
-      <div class="course-details-teacher container py-5 mb-5">
+      {% include 'v_utilities/snippets/entity-content.html' with body_title='Description' body=ent_request.body can_edit=can_edit modal_id=modal_id formset=formset %}
+      <div class="course-details-teacher container position-relative py-5 mb-5">
         <div class="row justify-content-around">
           <div class="d-flex flex-column col-sm-6 col-md-4">
             <h3>{% trans 'From:' %}</h3>

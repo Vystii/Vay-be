@@ -1,30 +1,18 @@
 <!-- templates/users/login.html -->
-{% extends 'users/dashboard.html' %}
-
-{% load static %}
-{% load custom_filters %}
-
+{% extends 'users/dashboard.html' %} {% load static %} {% load custom_filters %}
 {% block title %}
   Dashboard
-{% endblock %}
-
-{% block header %}
-  <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+{% endblock %} {% block header %}
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
   <link rel="stylesheet" href="{% static 'users/css/course-details.css' %}" />
-{% endblock %}
+{% endblock %} {% block bottom %}
 
-{% block bottom %}
-
-{% endblock %}
-
-{% block pageTitle %}
+{% endblock %} {% block pageTitle %}
   <div>
     <h2 class="text-black">Détails du cours</h2>
   </div>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
   <div class="vaybe-dashboard course-details-page">
     <div>
       <div class="body-header space-padding course-details-header d-flex justify-content-center">
@@ -34,19 +22,23 @@
             <tbody>
               {% if course.code_ue %}
                 <tr>
-                  <th scope="row" class="label">Code</th> <td class="value">{{ course.code_ue }}</td>
+                  <th scope="row" class="label">Code</th>
+                  <td class="value">{{ course.code_ue }}</td>
                 </tr>
               {% endif %} {% if course.year %}
                 <tr>
-                  <th scope="row" class="label">Year</th> <td class="value">{{ course.year }}</td>
+                  <th scope="row" class="label">Year</th>
+                  <td class="value">{{ course.year }}</td>
                 </tr>
               {% endif %} {% if course.study_field %}
                 <tr>
-                  <th scope="row" class="label">Speciality</th> <td class="value">{{ course.study_field }}</td>
+                  <th scope="row" class="label">Speciality</th>
+                  <td class="value">{{ course.study_field }}</td>
                 </tr>
               {% endif %} {% if course.study_level %}
                 <tr>
-                  <th scope="row" class="label">Study Level</th> <td class="value">{{ course.study_level }}</td>
+                  <th scope="row" class="label">Study Level</th>
+                  <td class="value">{{ course.study_level }}</td>
                 </tr>
               {% endif %}
             </tbody>
