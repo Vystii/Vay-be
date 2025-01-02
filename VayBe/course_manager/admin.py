@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, CourseFile, Note
+from .models import Course, CourseFile, Note, NoteType
 from django_ckeditor_5.widgets import CKEditor5Widget
 from django.forms import ModelForm
 
@@ -38,4 +38,8 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(NoteType)
+class NoteType(admin.ModelAdmin):
     pass

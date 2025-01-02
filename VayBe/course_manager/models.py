@@ -112,9 +112,10 @@ class NoteType(models.Model):
         verbose_name_plural = _("types de notes")
 
     def clean(self):
-        total_percentage = sum(note_type.percentage for note_type in NoteType.objects.filter(course=self.course)) + self.percentage
-        if total_percentage > 100:
-            raise ValidationError(_("The total percentage of note types for a course cannot exceed 100%. The current total would be %(total)s%%.") % {'total': total_percentage})
+        pass
+        # total_percentage = sum(note_type.percentage for note_type in NoteType.objects.filter(course=self.course)) + self.percentage
+        # if total_percentage > 100:
+        #     raise ValidationError(_("The total percentage of note types for a course cannot exceed 100%. The current total would be %(total)s%%.") % {'total': total_percentage})
 
     def save(self, *args, **kwargs):
         self.clean()  # Call the custom validation
@@ -123,14 +124,14 @@ class NoteType(models.Model):
     def __str__(self):
         return self.label
     
-class Note(PropertyModels):
+class Note(models.Model):
     def __str__(self):
         return f"{self.note}-{self.student.username}"
     
     course = models.ForeignKey(Course, verbose_name=_("course"), on_delete=models.CASCADE)
     student = models.ForeignKey(Users, verbose_name=_("student"), on_delete=models.CASCADE, related_name="+")
     correcteur = models.ForeignKey(Users, verbose_name=_("corrector"), on_delete=models.DO_NOTHING, related_name="+")
-    note_type = models.ForeignKey(NoteType, verbose_name=_("Note type"), on_delete=models.PROTECT, related_name="+", null=True)
+    # note_type = models.ForeignKey(NoteType, verbose_name=_("Note type"), on_delete=models.PROTECT, related_name="+", null=True)
     note = models.IntegerField(_("note"))
 
     class Meta:

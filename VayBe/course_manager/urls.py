@@ -12,3 +12,8 @@ urlpatterns = [
     path('course/<course_id>', views.CourseDetailView.as_view(), name='course_détails_id'),
     path('create-course/', views.CourseCreateView.as_view(), name='create_course'),
 ]
+urlpatterns += [ # Other URL patterns... 
+    path('api/students/<int:course_id>/', views.FetchStudentsView.as_view(), name='get_students'), 
+    path('api/students/<int:year>/<str:code_ue>', views.FetchStudentsView.as_view(), name='get_students'), 
+]
+urlpatterns += [ path('submit_notes/<int:course_id>/', views.SubmitNotesView.as_view(), name='submit_notes_page'), ]

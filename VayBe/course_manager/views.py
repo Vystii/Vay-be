@@ -8,10 +8,10 @@ from v_utilities.services import VUtilitiesService
 from users.models import Users
 from django.utils.translation import gettext_lazy as _
 import json
-from .models import Course, CourseFile
+from .models import Course, CourseFile, Note as NoteModel
 from django.urls import reverse
 from django.views.generic import DetailView
-from django.forms import modelformset_factory
+from django.forms import ValidationError, modelformset_factory
 from .forms import CourseForm, CourseFileForm
 
 class CoursesPage(TemplateBaseViews):
@@ -186,3 +186,78 @@ class CourseCreateView(View):
             # add message
             pass
         return render(request, self.template_name, {'form': form, 'formset': formset})
+    
+class FetchStudentsView(View):
+    
+    @staticmethod
+    def getCourseId( kwargs):
+        if "course_id" in kwargs:
+            return kwargs["course_id"]
+        elif "code_ue" in kwargs:
+            code_ue = kwargs["code_ue"]
+            year = kwargs["year"] if "year" in kwargs else VUtilitiesService.getCurrentYear()
+            course = get_object_or_404(Course, code_ue=code_ue, year=year)
+            return course.id
+        
+    def get(self, request, *args, **kwargs):
+        course_id = FetchStudentsView.getCourseId(kwargs)
+        course = Course.objects.get(id=course_id)
+        study_field = course.study_field
+        study_level = course.study_level
+        notes = NoteModel.objects.filter(course_id=course_id)
+        students = Users.objects.filter(study_level =study_level, study_field = study_field)
+        student_data = [{"username": student.username, "name": f"{student.first_name} {student.last_name}"} for student in students]
+        student_data = list()
+        for student in students:
+            _student = {
+                "username" : student.username,
+                "name": f"{student.first_name} {student.last_name}",
+            }
+            _notes = notes.filter(student = student)
+            if(_notes):
+                _student["note"] = notes[0].note
+            student_data.append(_student) 
+        return JsonResponse(student_data, safe=False)
+    
+class SubmitNotesView(View):
+    template_name = 'course_manager/submit_notes.html'
+    
+    
+    def post(self, request, *args, **kwargs):
+        course_id = FetchStudentsView.getCourseId(kwargs)
+        try:
+            values = list()
+            notes_data = json.loads(request.body)  # Assuming request body contains JSON data
+            for note_data in notes_data:
+                student = Users.objects.get(username=note_data['username'])
+                print(note_data)
+                note = NoteModel(
+                    course_id=course_id,
+                    student=student,
+                    correcteur=request.user,
+                    note=note_data['note'],
+                    # note_type_id=1  # Adjust this as needed
+                )
+                note.save()
+                values.append(note.id)
+            return JsonResponse({"status": "success", "data": values})
+        except ValidationError as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": f"An error occurred. {str(e)}"}, status=500)
+    def get(self, request, *args, **kwargs):
+        course_id = FetchStudentsView.getCourseId(kwargs)
+        course = get_object_or_404(Course, id=course_id)
+        context = {'courseLabel': course.label, "course_id": course_id}
+        return render(request, self.template_name, context)
+    
+    
+class SubmitNotesPageView(LoginBaseViews):
+
+    def get(self, request, *args, **kwargs):
+        course_id = FetchStudentsView.getCourseId(kwargs)
+        course = get_object_or_404(Course, id=course_id)
+        context = {'courseLabel': course.label, "course_id": course_id}
+        return render(request, self.template_name, context)
+    
+    
