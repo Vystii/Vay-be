@@ -85,22 +85,51 @@ class Note(LoginBaseViews):
         return HttpResponse("notes")    
     
 
-class CourseDetailView(DetailView):
-    model = Course
-    template_name = 'course_manager/course-details.html'
+class CourseDetailView(LoginBaseViews):
+    template_name = "course_manager/course-details.html"
     context_object_name = 'course'
+
+    def get(self, request, course_id):
+        datas = self.get_context_data(course_id)
+        datas["course" ] = datas["course_details"]
+        return render(request, self.template_name, datas)
     
-    def get_object(self):
-        course = None
-        if(self.kwargs.get('course_id')):
-            course  =  get_object_or_404(Course, pk=self.kwargs.get('course_id'))
+    def post(self, request, course_id):
+        course_instance = get_object_or_404(Course, id=course_id)
+        form = CourseForm(request.POST, instance=course_instance)
+        CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=10)
+        
+        formset = CourseFileFormSet(request.POST, request.FILES, queryset=CourseFile.objects.filter(course=course_instance))
+        
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            filesForm = formset.save(commit=False)
+            for fileForm in filesForm:
+                if fileForm.file:
+                    fileForm.course = course_instance
+                    fileForm.save()
         else:
-            year = self.kwargs.get('year')
-            if year is None:
-                year = VUtilitiesService.getCurrentYear()
-            code_ue = self.kwargs.get('code_ue')
-            course = get_object_or_404(Course, year=year, code_ue=code_ue)
-        return course.toDict()
+            datas = self.get_context_data(course_id)
+            datas['formset']['fileForm'] = formset
+                    
+        datas['formset']['form'] = form
+        return render(request, self.template_name, datas)
+
+    def get_context_data(self, course_id):
+        user = self.request.user
+        course = get_object_or_404(Course, id=course_id)
+        form = CourseForm(instance=course)
+        CourseFileFormSet = modelformset_factory(CourseFile, form=CourseFileForm, extra=1)
+        fileForm = CourseFileFormSet(queryset=CourseFile.objects.filter(course=course))
+        print(f"******************\form: {form}\formset: {CourseFileFormSet}\n***************************")
+        return {
+            "isTeacher": user.user_permissions.filter(codename='teach').exists() or user.is_superuser,
+            "can_edit":  user in [teacher for teacher in course.teachers.all()],
+            "modal_id": "form_edit_course",
+            "course_details": course.toDict(),
+            "formset": {"form": form, "fileForm": fileForm}
+        }
+
     
 
 class CourseCreateView(View):
