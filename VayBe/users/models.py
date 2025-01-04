@@ -9,10 +9,8 @@ from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 from django.core import validators
 
-
-
 from v_utilities.validators import ModelValidator
-from v_utilities.models import ModelBase
+from v_utilities.models import ModelBase, StudyField, StudyLevel
 
   
 def validate_pdf(value):
@@ -20,7 +18,7 @@ def validate_pdf(value):
         raise validators.ValidationError(_("Only PDF files are allowed."))
 
 
-class Users(ModelBase, AbstractUser):
+class Users(AbstractUser):
     class Meta:
         permissions = [
             # Ths permission should be given be any way possible to the instructors
@@ -33,6 +31,9 @@ class Users(ModelBase, AbstractUser):
         self.is_superuser
         return f"{self.username}-{self.email}"
     
+    
+    study_level = models.ForeignKey(StudyLevel, verbose_name=_("studies level"), on_delete=models.CASCADE, blank=True)
+    study_field = models.ForeignKey(StudyField, verbose_name=_("study field"), on_delete=models.CASCADE, blank = True)
     username_validator = ModelValidator(regex = r"^[1-9]{2}[A-Z]\d{3,4}$")
     username = models.CharField(
         _("matricule"),
@@ -106,7 +107,7 @@ class Users(ModelBase, AbstractUser):
     
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email", "date_joined", "studies_level"]
+    REQUIRED_FIELDS = ["email", "date_joined"]
     
     
 
