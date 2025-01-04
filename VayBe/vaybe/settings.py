@@ -56,8 +56,8 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -135,9 +135,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+CSRF_COOKIE_SECURE = False
 
 # Cors 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'chrome-extension://ihgpcfpkpmdcghlnaofdmjkoemnlijdi']
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", 'http://localhost:5173', 'chrome-extension://ihgpcfpkpmdcghlnaofdmjkoemnlijdi']
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 # Static files (CSS, JavaScript, Images)

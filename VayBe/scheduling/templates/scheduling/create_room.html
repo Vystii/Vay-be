@@ -1,21 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Room</title>
-  </head>
-  <body>
-    <h1>Create Room</h1>
-    <form method="post">
-      {% csrf_token %}
-      <label for="id">Room ID:</label>
-      <input type="text" id="id" name="id" required /><br /><br />
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required /><br /><br />
-      <label for="capacity">Capacity:</label>
-      <input type="number" id="capacity" name="capacity" required /><br /><br />
-      <button type="submit">Create Room</button>
-    </form>
-  </body>
-</html>
+{% extends 'v_utilities/form-base.html' %}
+{% load static %}
+
+{% block pageTitle %}
+  <div class="title-section bg-black d-flex justify-content-center py-4">
+    <div>
+      <h1 class="text-center text-white fw-bold mb-0">Generate Schedule</h1>
+    </div>
+  </div>
+{% endblock %}
+
+{% block banner_label %}
+  Generate schedules
+{% endblock %}
+
+{% block content_table %}
+  <h1>Create Room</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="id">Room ID:</label>
+    <input type="text" id="id" name="id" required /><br /><br />
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required /><br /><br />
+    <label for="capacity">Capacity:</label>
+    <input type="number" id="capacity" name="capacity" required /><br /><br />
+    <button type="submit">Create Room</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,91 @@
+/* Style for the custom-register-form class */
+.custom-register-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Style for form field labels */
+.custom-register-form label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+/* Style for text input, textarea, and select fields */
+.custom-register-form input[type="text"],
+.custom-register-form input[type="email"],
+.custom-register-form input[type="password"],
+.custom-register-form textarea,
+.custom-register-form select {
+    display: block;
+    width: 100%;
+    height: 3.5rem; /* Adjusted height */
+    padding: 0.5rem 0.75rem; /* Adjusted padding */
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Style for checkboxes and radio buttons */
+.custom-register-form input[type="checkbox"],
+.custom-register-form input[type="radio"] {
+    width: auto; /* Default size */
+    height: auto; /* Default size */
+    margin: 0 0.5rem 0 0;
+}
+
+/* Style for form control fields on focus */
+.custom-register-form input:focus,
+.custom-register-form textarea:focus,
+.custom-register-form select:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+/* Style for submit button */
+.custom-register-form button {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* Style for submit button on hover */
+.custom-register-form button:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+/* Style for help text */
+.custom-register-form .form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #6c757d;
+}
+
+/* Style for error messages */
+.custom-register-form .errorlist {
+    list-style-type: none;
+    padding: 0;
+    color: #ff0000;
+    margin-top: 0.25rem;
+}

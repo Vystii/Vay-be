@@ -21,14 +21,10 @@ from django.conf.urls.static import static
 from v_utilities.views import TemplateBaseViews
 from users.views import RequestDetailView
 from debug_toolbar.toolbar import debug_toolbar_urls
-class TestLoginView(TemplateBaseViews):
-    template_name = "test_login.html"
+from .views import custom_404_view
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['message'] = "You are logged in!"
-        return context
 
+handler404 = custom_404_view
 # Add the URL pattern in urls.py
 urlpatterns = [
     path('request/<int:pk>', RequestDetailView.as_view(), name="request_page"),
@@ -41,9 +37,6 @@ urlpatterns += [
     path("ckeditor5/", include('django_ckeditor_5.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += [
-    path('test-login/', TestLoginView.as_view(), name='test_login'),
-]
 
 urlpatterns += [
     path("scheduling/",include("scheduling.urls")) 

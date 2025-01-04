@@ -85,6 +85,9 @@ class ViewSchedulesView(View):
     def post(self, request: WSGIRequest):
         schedules = SchedulingService.get_all_schedules()
         return JsonResponse(schedules, safe=False)
+    def get(self, request: WSGIRequest):
+        schedules = SchedulingService.get_all_schedules()
+        return JsonResponse(schedules, safe=False)
 
 class AddScheduleView(View):
     def get(self, request: WSGIRequest):

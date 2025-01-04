@@ -1,10 +1,12 @@
-<div class="entity-details-content box-shadow space-inner-px space-inner space-padding container mb-5">
+<div class="entity-details-content position-relative box-shadow space-inner-px space-inner space-padding container mb-5">
   {% if can_edit and formset %}
-    <button type="button" data-bs-toggle="modal" data-bs-target="#{{ modal_id|default:'exampleModal' }}" class="btn btn-outline-primary me-0 ms-auto entity-action-element">
-      <svg fill="currentColor" height="32px" width="32px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xml:space="preserve">
-        <path d="m70.2 337.4 104.4 104.4L441.5 175 337 70.5zM.6 499.8c-2.3 9.3 2.3 13.9 11.6 11.6L151.4 465 47 360.6zM487.9 24.1c-46.3-46.4-92.8-11.6-92.8-11.6-7.6 5.8-34.8 34.8-34.8 34.8l104.4 104.4s28.9-27.2 34.8-34.8c0 0 34.8-46.3-11.6-92.8" />
-      </svg>
-    </button>
+    <div class="btn-group position-absolute end-0 top-0" role="group" aria-label="Basic example">
+      <button type="button" data-bs-toggle="modal" data-bs-target="#{{ modal_id|default:'exampleModal' }}" class="btn btn-outline-primary me-0 ms-auto entity-action-element">Edit</button>
+
+      {% for action in actions %}
+        <a href="{{ action.url }}" class="btn btn-outline-primary">{{ action.label }}</a>
+      {% endfor %}
+    </div>
     {% include 'v_utilities/snippets/modal-form.html' with formset=formset %}
   {% endif %}
   {% if body %}

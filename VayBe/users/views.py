@@ -43,7 +43,7 @@ class Dashboard(TemplateBaseViews):
             "std_field": user.study_field,
             "is_staff": user.is_staff
         }
-        context['blocks'] = PluginManager.getBlocksInfos()
+        context['blocks'] = PluginManager.getBlocksInfos(self.request.user.is_superuser and not self.request.user.is_staff)
         return context
 
 class CustomLoginView(LoginView):
@@ -168,6 +168,5 @@ class RegisterView(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            return redirect('home')
+            return redirect('dashboard')
         return render(request, self.template_name, {'form': form})

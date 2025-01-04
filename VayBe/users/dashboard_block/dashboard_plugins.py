@@ -17,4 +17,19 @@ class RequestBlock(DashboardBase):
     @staticmethod
     def getPluginInfos()->dict:
         return DashboardBase.getPluginInfos(RequestBlock)
+
+class CreateStudent(DashboardBase):
+    class Meta:
+        abstract = False
+    
+    title = _("Add people")
+    description = _("add a new student or teacher")
+    routeName = "add_user"
+    icon = """
+    <svg viewBox="-0.08 0 60.031 60.031" data-name="add user" xmlns="http://www.w3.org/2000/svg"><path d="M673.732 711.059c-.515 2.6-1.1 5.991-2.857 5.991a1.6 1.6 0 0 1-.568-.122c-.594 1.447-1.291 4.5-2.08 5.969a17.955 17.955 0 0 0-3.618 27.1H630s1.523-8.425 4.2-8.986c16.79-3.523 17.786-12.908 17.786-12.908v-4.839c-.875-1.261-1.643-4.763-2.289-6.338a1.6 1.6 0 0 1-.568.122c-1.759 0-2.342-3.389-2.857-5.991a6.6 6.6 0 0 1-.02-3.266c0-.123-.021-.248-.021-.37 0-9.285 3.642-16.34 11.773-17.321 0 0 1.306-.069 1.906-.107.44.036 2.094.107 2.094.107 8.131.981 11.773 8.036 11.773 17.321 0 .122-.019.247-.021.37a6.6 6.6 0 0 1-.024 3.268M660 689.974a.672.672 0 1 1-.094.021c-.152-.012-.161-.021.094-.021" data-name="user copy" transform="translate(-630 -689.969)" style="fill:#d9b78b;fill-rule:evenodd"/><path d="M677.875 726a12 12 0 1 1-12 12 12 12 0 0 1 12-12M672 740h4v4a2 2 0 0 0 4 0v-4h4a2 2 0 0 0 0-4h-4v-4a2 2 0 0 0-4 0v4h-4a2 2 0 0 0 0 4" transform="translate(-630 -689.969)" style="fill-rule:evenodd;fill:#699f4c"/></svg>    """
+    active = True
+    admin = True
+    @staticmethod
+    def getPluginInfos()->dict:
+        return DashboardBase.getPluginInfos(CreateStudent)
     

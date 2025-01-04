@@ -12,7 +12,8 @@ from .models import Course, CourseFile, Note as NoteModel
 from django.urls import reverse
 from django.views.generic import DetailView
 from django.forms import ValidationError, modelformset_factory
-from .forms import CourseForm, CourseFileForm
+from .forms import CourseForm, CourseFileForm, AdminCourseForm
+
 
 class CoursesPage(TemplateBaseViews):
     class meta:
@@ -48,10 +49,13 @@ class CoursesPage(TemplateBaseViews):
             'courses': courses
         }
         return context
-    
 
-# class UserCourses(LoginBaseViews):
-# class UserCourses(View):
+class GivingNotePages(CoursesPage):
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        
+        return context
+      
 class UserCourses(LoginBaseViews):
     @staticmethod
     def getCourses(user_matricule:str, year:int = VUtilitiesService.getCurrentYear()):
@@ -110,6 +114,13 @@ class CourseDetailView(LoginBaseViews):
         datas = self.getDatas(kwargs)
         if datas is None:
             return HttpResponse("404")
+        if datas["can_edit"]:
+            datas["actions"] = [
+                {
+                    "label":"Notes",
+                    "url": reverse("submit_notes_page", kwargs={"course_id": datas["course_details"]["id"]})
+                }
+            ]
         return render(request, self.template_name, datas)
     
     def post(self, request, *args, **kwargs):
@@ -260,4 +271,18 @@ class SubmitNotesPageView(LoginBaseViews):
         context = {'courseLabel': course.label, "course_id": course_id}
         return render(request, self.template_name, context)
     
-    
+class RegisterView(View):
+    template_name = 'v_utilities/form-base.html'
+    form_class = AdminCourseForm
+
+    def get(self, request):
+        form = self.form_class()
+        print(f"json form: {form.fields}")
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('dashboard')
+        return render(request, self.template_name, {'form': form})

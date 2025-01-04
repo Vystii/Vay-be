@@ -35,3 +35,20 @@ class NoteBlock(DashboardBase):
     @staticmethod
     def getPluginInfos():
         return DashboardBase.getPluginInfos(NoteBlock)
+    
+class AddCourseBlock(DashboardBase):
+    class Meta:
+        abstract = False
+    
+    title = _("Add course")
+    description = _("add a new course")
+    routeName = "add_course"
+    icon = """
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#fff" fill-opacity=".01" d="M0 0h48v48H0z"/><path d="M38 4H10a2 2 0 0 0-2 2v36a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2" fill="#2F88FF" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 30h14m-14 6h7m-5-19h10m-5 5V12" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    """
+    active = True
+    admin = True
+    weight = 3
+    @staticmethod
+    def getPluginInfos()->dict:
+        return DashboardBase.getPluginInfos(AddCourseBlock)

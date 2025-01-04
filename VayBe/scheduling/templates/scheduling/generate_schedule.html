@@ -1,27 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generate Schedule</title>
-    {% comment %} <link rel="stylesheet" href="{% static 'css/styles.css' %}" /> {% endcomment %}
-  </head>
-  <body>
-    <h1>Generate Schedule</h1>
-    <form method="post" action="{% url 'generate_schedule' %}">
-      {% csrf_token %}
-      <label for="granularity">Granularity (minutes):</label>
-      <input type="number" id="granularity" name="granularity" required /><br /><br />
+{% extends 'v_utilities/form-base.html' %}
+{% load static %}
 
-      <!-- Add inputs for courses, rooms, school classes, etc. as needed -->
+<h1>Generate Schedule</h1>
 
-      <button type="submit">Generate Schedule</button>
-    </form>
+{% block banner_label %}
+  Generate schedules
+{% endblock %}
+{% block content_table %}
+  <form method="post" action="{% url 'generate_schedule' %}">
+    {% csrf_token %}
+    <label for="granularity">Granularity (minutes):</label>
+    <input type="number" id="granularity" name="granularity" required /><br /><br />
 
-    <!-- Display response or messages -->
-    {% if response %}
-      <h2>Generated Schedule</h2>
-      <pre>{{ response }}</pre>
-    {% endif %}
-  </body>
-</html>
+    <!-- Add inputs for courses, rooms, school classes, etc. as needed -->
+
+    <button type="submit">Generate Schedule</button>
+  </form>
+{% endblock %}

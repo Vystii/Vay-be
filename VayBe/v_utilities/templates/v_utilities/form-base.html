@@ -1,13 +1,21 @@
 <!-- templates/users/login.html -->
-{% extends 'users/dashboard.html' %} {% load static %} {% load custom_filters %}
+{% extends 'v_utilities/dashboard-table.html' %}
+{% load static %}
+{% load custom_filters %}
 {% block title %}
   Dashboard
-{% endblock %} {% block header %}
+{% endblock %}
+{% block header %}
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'users/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="{% static 'v_utilities/css/form-base.css' %}" />
   <link rel="stylesheet" href="{% static 'users/css/dashboard-table.css' %}" />
-{% endblock %} {% block bottom %}
+{% endblock %}
+{% block bottom %}
+  {{ block.super }}
   <script src="{% static 'js/dashboard-table.js' %}"></script>
-{% endblock %} {% block content_class %}
+{% endblock %}
+{% block content_class %}
 
 {% endblock %} {% block pageTitle %}
   <div class="title-section bg-black d-flex justify-content-center py-4">
@@ -15,44 +23,26 @@
       <h1 class="text-center text-white fw-bold mb-0">{{ header.title }}</h1>
     </div>
   </div>
-{% endblock %} {% block content %}
-  <div class="vaybe-dashboard">
-    <div>
-      <div class="body-header space-padding bg-white d-flex justify-content-center">
-        <div class="dashboard-user-info space-inner-px w-auto">
-          <h2 class="dashboad-studentinfo-section-title fw-bolder text-black text-uppercase double-dots-title dot-center text-center circle primary mb-5">
-            {% block banner_label %}
-              Your form
-            {% endblock %}
-          </h2>
-        </div>
-        <div class="content">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Launch demo modal</button>
-          {% block modal_form %}
-            <div class="modal fade" id="exampleModal" tabindex="-1">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-bs-label="Close"><span aria-hidden="true">&times;</span></button>
-                  </div>
-                  <div class="modal-body">
-                    <form method="post" enctype="multipart/form-data">
-                      {% csrf_token %}
-                      {{ form.as_p }}
-                      {{ formset.management_form }}
-                      {% for subform in formset %}
-                        {{ subform.as_p }}
-                      {% endfor %}
-                      <button type="submit">Register</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endblock %}
-        </div>
-      </div>
-    </div>
+{% endblock %}
+{% block banner_label %}
+  {% if title %}
+    {{ title }}
+  {% endif %}
+{% endblock %}
+{% block content_table %}
+  <div class="body">
+    <form method="post" class="custom-register-form" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {{ formset.management_form }}
+      {% for subform in formset %}
+        {{ subform.as_p }}
+      {% endfor %}
+      <button type="submit">Register</button>
+    </form>
   </div>
+{% endblock %}
+
+{% block placeholder %}
+
 {% endblock %}

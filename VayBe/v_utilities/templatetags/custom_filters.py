@@ -13,3 +13,7 @@ def render_field(field):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
+@register.filter(name='as_bootstrap_field')
+def as_bootstrap_field(field): 
+    return field.as_widget(attrs={ 'class': 'form-control' })

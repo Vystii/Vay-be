@@ -53,13 +53,14 @@
             </thead>
           </table>
         {% endblock %}
-        <div class="table-placeholder placeholder-wave">
-          <div class="placeholder mb-1 placeholder-lg"></div>
-          <div class="placeholder mb-1 placeholder-lg"></div>
-          <div class="placeholder mb-1 placeholder-lg"></div>
-          <div class="placeholder mb-1 placeholder-lg"></div>
-        </div>
-        {% for course in courses %}{% endfor %}
+        {% block placeholder %}
+          <div class="table-placeholder placeholder-wave">
+            <div class="placeholder mb-1 placeholder-lg"></div>
+            <div class="placeholder mb-1 placeholder-lg"></div>
+            <div class="placeholder mb-1 placeholder-lg"></div>
+            <div class="placeholder mb-1 placeholder-lg"></div>
+          </div>
+        {% endblock %}
       </div>
     </div>
   </div>

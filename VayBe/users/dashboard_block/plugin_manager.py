@@ -6,7 +6,8 @@ from v_utilities.urls import route_exists
 class DashboardBase:
     class Meta:
         abstract = True
-    weight = 0    
+    weight = 0
+    admin = False
     @staticmethod
     def getPluginInfos(cls)->dict:
         return {
@@ -14,6 +15,7 @@ class DashboardBase:
             "description": cls.description,
             "route_name": cls.routeName,
             "active": cls.active,
+            "admin": cls.admin,
             "icon": cls.icon,
             "weight" : cls.weight
         }
@@ -36,10 +38,12 @@ class PluginManager(PluginBaseManager):
         return data
     
     @staticmethod
-    def getBlocksInfos()->list[dict]:
-        
-        return sorted([block.getPluginInfos() for block in PluginManager.getBlocks()], key = lambda plugin    : plugin["weight"])
-        
+    def getBlocksInfos(admin = False, staff = True)->list[dict]:
+        plugins = sorted([block.getPluginInfos() for block in PluginManager.getBlocks()], key = lambda plugin    : plugin["weight"])
+        if(admin):
+            plugins = filter(lambda plugin: plugin["admin"]== admin or staff, plugins)
+        return plugins
+    
     @staticmethod 
     def getPluginsNamespace()->str:
         return "dashboard_block.dashboard_plugins"
