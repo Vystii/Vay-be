@@ -1,9 +1,11 @@
 import requests
 import json
+from django.conf import settings  # Import Django settings
+
 class SchedulingService:
-    BASE_URL = 'http://localhost:8080/api/schedules'
-    ROOMS_URL = 'http://localhost:8080/api/rooms'
-    SETTINGS_URL = 'http://localhost:8080/api/settings'
+    BASE_URL = f'{settings.BASE_URL}/api/schedules'
+    ROOMS_URL = f'{settings.BASE_URL}/api/rooms'
+    SETTINGS_URL = f'{settings.BASE_URL}/api/settings'
 
     @staticmethod
     def generate_schedule(schedule_request):

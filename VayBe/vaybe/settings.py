@@ -87,7 +87,8 @@ INTERNAL_IPS = [
 ]
 
 WSGI_APPLICATION = 'vaybe.wsgi.application'
-
+# Get BASE_URL from .env file 
+BASE_URL = env('BASE_URL')
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
